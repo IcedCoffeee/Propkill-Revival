@@ -125,7 +125,7 @@ end
 function GetAlivePlayers()
     local aliveplayers = {}
     for k,v in pairs( player.GetAll() ) do
-        if v:Alive() and v:Team() != 4 then table.insert( aliveplayers, v ) end
+        if v:Alive() and v:Team() != 0 then table.insert( aliveplayers, v ) end
     end
     return aliveplayers or nil
 end
