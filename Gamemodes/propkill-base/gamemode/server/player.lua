@@ -102,7 +102,7 @@ function GM:PlayerShouldTakeDamage(ply, attacker)
 	if ply:IsPlayer() and attacker:GetClass() == "worldspawn" then
 		return false
 	end
-	if ply:Team() == 1 then
+	if ply:Team() == 0 then
 		return true
 	end
 	if ply:Team() == attacker.Owner:Team() and ply != attacker.Owner then
