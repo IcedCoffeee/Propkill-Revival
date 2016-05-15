@@ -15,5 +15,5 @@ function AllNotify(message)
 end
 
 function LogPrint(message)
-	Msg("[PK TDM]: " .. message .. "\n")
+	Msg("[Propkill]: " .. message .. "\n")
 end

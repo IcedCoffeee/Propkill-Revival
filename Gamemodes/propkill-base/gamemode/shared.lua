@@ -28,7 +28,7 @@ hook.Add("Initialize", "PK_InitializeStreakSounds2", function()
         util.PrecacheSound(v.sound)
         if SERVER then
             resource.AddFile(v.sound)
-            print("[Cool PK]: Adding resource: " .. v.sound)
+            LogPrint("Adding resource: " .. v.sound)
         end
     end
 end)
