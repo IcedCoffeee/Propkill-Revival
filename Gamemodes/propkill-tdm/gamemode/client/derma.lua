@@ -162,7 +162,7 @@ function PKHelp()
 	local html = vgui.Create("HTML", helpframe)
 	html:SetPos(0, 0)
 	html:Dock(FILL)
-	html:OpenURL("http://www.google.com")
+	html:OpenURL("http://steamcommunity.com/sharedfiles/filedetails/?id=572479773")
 end
 
 net.Receive("helpmenu", PKHelp)
