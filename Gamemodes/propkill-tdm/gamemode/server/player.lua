@@ -2,7 +2,7 @@ function GM:PlayerInitialSpawn(ply)
 	if (!ply:IsBot()) then
 		net.Start("teamselect")
 		net.Send(ply)
-		ply:SetTeam(3)
+		ply:SetTeam(TEAM_UNASSIGNED)
 		else
 		ply:SetTeam(1)
 	end
