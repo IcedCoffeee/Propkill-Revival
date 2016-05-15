@@ -1,5 +1,5 @@
 "propkill-base"
 {
-	"title"		"Propkill"
+	"title"		"Propkill-Base"
 	"menusystem"	"1"
 }
