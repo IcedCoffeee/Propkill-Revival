@@ -26,7 +26,7 @@ function GM:PlayerSpawnProp(ply, model)
 		return false
 	end
 
-	if ply:Team() == 0 then
+	if ply:Team() == TEAM_UNASSIGNED then
 		ply:SendLua("GAMEMODE:AddNotify(\"You can't spawn props as a Spectator!\", NOTIFY_GENERIC, 3)")
 		ply:SendLua("surface.PlaySound('buttons/button2.wav')")
 		return false

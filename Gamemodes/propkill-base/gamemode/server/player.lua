@@ -20,7 +20,7 @@ function GetLeader()
 end
 
 function GM:PlayerSpawn(ply)
-	if (ply:Team() == 0) then
+	if (ply:Team() == TEAM_UNASSIGNED) then
 		ply:StripWeapons()
 		ply:Spectate(OBS_MODE_ROAMING)
 		return true
@@ -48,7 +48,7 @@ function GM:PlayerDeath(ply, inflictor, attacker)
 		if (propOwner != ply) then
 			attacker:AddFrags(1)
 			MsgAll(attacker:Nick() .. " killed " .. ply:Nick() .. "!")
-			if attacker:Team() != 3 then
+			if attacker:Team() != TEAM_UNASSIGNED then
 				team.AddScore(attacker:Team(), 1)
 			end
 			attacker.temp = attacker.temp + 1
