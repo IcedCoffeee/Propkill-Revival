@@ -1,0 +1,5 @@
+"propkill-duel"
+{
+	"title"		"Propkill-Duel"
+	"menusystem"	"1"
+}
