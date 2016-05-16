@@ -65,7 +65,14 @@ function GM:PlayerDeath(ply, inflictor, attacker)
 	net.WriteEntity(attacker)
 	net.Broadcast()
 
-	util.Decal("Blood", ply.GetPos(), ply.GetPos() - Vector(0, 0, 100))
+	local x = ply:GetPos().x
+	local y = ply:GetPos().y
+	local z = ply:GetPos().z
+
+	// blood effect
+	BroadcastLua("util.Decal(\"Blood\", Vector(" .. x .. "," .. y .. "," .. z .. "), Vector(" .. x .. "," .. y .. "," .. z .. ") - Vector(0, 0, 100))")
+
+	print("yes")
 
 	GetLeader()
 end
