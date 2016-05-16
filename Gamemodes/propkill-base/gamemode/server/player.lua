@@ -29,6 +29,8 @@ function GM:PlayerSpawn(ply)
 	end
 	ply.temp = 0
 	ply:SetHealth(1)
+	ply:SetWalkSpeed(400)
+	ply:SetRunSpeed(400)
 	ply:SetJumpPower(200)
 	ply:Give("weapon_physgun")
 	ply:SetModel("models/player/alyx.mdl")
