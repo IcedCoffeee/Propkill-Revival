@@ -17,3 +17,12 @@ end
 function LogPrint(message)
 	Msg("[Propkill]: " .. message .. "\n")
 end
+
+function shuffle(table)
+	local num = #table
+	for i = 1, num do
+		local randnum = math.random(1, num)
+		table[randnum], table[i] = table[i], table[randnum]
+	end
+	return table
+end

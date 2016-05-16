@@ -18,3 +18,22 @@ function ChangeTeam(ply, cmd, args)
 	end
 end
 concommand.Add("pk_team", ChangeTeam)
+
+function AutoBalance(ply)
+	if !ply:IsSuperAdmin() then return false end
+	LogPrint("Balancing and shuffling teams...")
+	ChatMsg({"Teams have been shuffled and balanced"})
+	local plys = shuffle(player.GetAll())
+	newteam = 1
+	for k,v in pairs(plys) do
+		if newteam == 1 then
+			v:SetTeam(newteam)
+			newteam = 2
+		elseif newteam == 2 then
+			v:SetTeam(newteam)
+			newteam = 1
+		end
+		v:Spawn()
+	end
+end
+concommand.Add("pk_autobalance", AutoBalance)

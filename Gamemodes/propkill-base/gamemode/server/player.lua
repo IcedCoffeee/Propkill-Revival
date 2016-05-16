@@ -1,5 +1,5 @@
 function GM:PlayerInitialSpawn(ply)
-	ply:SetTeam(TEAM_DEATHMATCH)
+	ply:SetTeam(1)
 	ply.temp = 0
 end
 
