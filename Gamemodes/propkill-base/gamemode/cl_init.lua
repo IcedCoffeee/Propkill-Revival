@@ -6,7 +6,7 @@ net.Receive("chatmsg", function(len)
 end)
 
 function KilledByProp()
-	local ply       = net.ReadEntity()
+	local ply	   = net.ReadEntity()
 	local inflictor = net.ReadString()
 	local attacker  = net.ReadEntity()
 
