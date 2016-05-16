@@ -64,6 +64,9 @@ function GM:PlayerDeath(ply, inflictor, attacker)
 	net.WriteString(inflictor:GetClass())
 	net.WriteEntity(attacker)
 	net.Broadcast()
+
+	util.Decal("Blood", ply.GetPos(), ply.GetPos() - Vector(0, 0, 100))
+
 	GetLeader()
 end
 

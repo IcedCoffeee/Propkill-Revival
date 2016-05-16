@@ -21,4 +21,8 @@ hook.Add("PreDrawSkyBox", "removeSkybox", function()
 end)
 RunConsoleCommand("pk_leaderboard")
 
+// Propkill optimized defaults
 RunConsoleCommand("cl_drawspawneffect", "0")
+RunConsoleCommand("cl_updaterate", "1000")
+RunConsoleCommand("cl_interp", "0")
+RunConsoleCommand("rate", "1048576")
