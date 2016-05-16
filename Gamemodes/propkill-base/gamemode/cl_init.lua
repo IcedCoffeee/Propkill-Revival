@@ -20,3 +20,5 @@ hook.Add("PreDrawSkyBox", "removeSkybox", function()
 	return true
 end)
 RunConsoleCommand("pk_leaderboard")
+
+RunConsoleCommand("cl_drawspawneffect", "0")
