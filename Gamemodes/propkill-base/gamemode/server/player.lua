@@ -74,8 +74,6 @@ function GM:PlayerDeath(ply, inflictor, attacker)
 	// blood effect
 	BroadcastLua("util.Decal(\"Blood\", Vector(" .. x .. "," .. y .. "," .. z .. "), Vector(" .. x .. "," .. y .. "," .. z .. ") - Vector(0, 0, 100))")
 
-	print("yes")
-
 	GetLeader()
 end
 
