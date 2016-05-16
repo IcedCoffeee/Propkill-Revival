@@ -1,0 +1,5 @@
+"propkill-tdm"
+{
+	"title"		"Propkill-TDM"
+	"menusystem"	"1"
+}
