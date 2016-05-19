@@ -2,11 +2,31 @@
 				Prop Whitelist
 ------------------------------------------*/ 
 
+// backup in case github is down for whatever reason
+allowedProps = {
+	"models/props_phx/wheels/moped_tire.mdl",
+	"models/props/de_tides/gate_large.mdl",
+	"models/props/de_inferno/chimney01.mdl",
+	"models/props_junk/sawblade001a.mdl",
+	"models/props/CS_militia/refrigerator01.mdl",
+	"models/XQM/CoasterTrack/slope_225_4.mdl",
+	"models/props_c17/Lockers001a.mdl",
+	"models/props_phx/construct/metal_plate4x4.mdl",
+	"models/props_lab/blastdoor001c.mdl",
+	"models/props/de_inferno/flower_barrel_p11.mdl",
+	"models/props/de_inferno/flower_barrel_p10.mdl",
+	"models/XQM/CoasterTrack/slope_225_3.mdl",
+	"models/XQM/CoasterTrack/slope_225_2.mdl",
+}
+
 http.Fetch("http://raw.githubusercontent.com/IcedCoffeee/Propkill-Revival/master/Addons/propkill-whitelist/props.txt",
 	function(body, len, headers, code)
-		allowedProps = RunString(body)
+		RunString(body)
+	end,
+	function(error)
+		print("Could not fetch props.txt whitelist. Error: " .. error)
 	end
- )
+)
 
 hook.Add("PlayerSpawnProp", "propwhitelist", function(ply, model)
 	local allowed = false
