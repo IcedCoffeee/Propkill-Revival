@@ -28,6 +28,19 @@ http.Fetch("http://raw.githubusercontent.com/IcedCoffeee/Propkill-Revival/master
 	end
 )
 
+function FetchPropWhitelist()
+	if !ply:IsSuperAdmin() then return false end
+	http.Fetch("http://raw.githubusercontent.com/IcedCoffeee/Propkill-Revival/master/Addons/propkill-whitelist/props.txt",
+		function(body, len, headers, code)
+			RunString(body)
+		end,
+		function(error)
+			print("Could not fetch props.txt whitelist. Error: " .. error)
+		end
+	)
+end
+concommand.Add("pk_fetchpropwhitelist", FetchPropWhitelist)
+
 hook.Add("PlayerSpawnProp", "propwhitelist", function(ply, model)
 	local allowed = false
 	for k,v in pairs(allowedProps) do

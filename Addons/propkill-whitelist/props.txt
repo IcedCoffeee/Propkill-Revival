@@ -12,4 +12,7 @@ allowedProps = {
 	"models/props/de_inferno/flower_barrel_p10.mdl",
 	"models/XQM/CoasterTrack/slope_225_3.mdl",
 	"models/XQM/CoasterTrack/slope_225_2.mdl",
+	"models/props_canal/canal_bars004.mdl",
+	"models/props_phx/construct/metal_angle360.mdl",
+	"models/mechanics/wheels/wheel_speed_72.mdl",
 }

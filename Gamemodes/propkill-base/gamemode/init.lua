@@ -16,6 +16,7 @@ AddCSLuaFile("cl_init.lua")
 AddCSLuaFile("shared.lua")
 AddCSLuaFile("client/hud.lua")
 AddCSLuaFile("client/hax.lua")
+AddCSLuaFile("client/scrubkeys.lua")
 
 /*------------------------------------------
 				Network Strings

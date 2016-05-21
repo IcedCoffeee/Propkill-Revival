@@ -1,6 +1,7 @@
 include("shared.lua")
 include("client/hud.lua")
 include("client/hax.lua")
+include("client/scrubkeys.lua")
 
 net.Receive("chatmsg", function(len) 
 	chat.AddText(unpack(net.ReadTable()))
