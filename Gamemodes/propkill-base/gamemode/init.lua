@@ -17,6 +17,7 @@ AddCSLuaFile("shared.lua")
 AddCSLuaFile("client/hud.lua")
 AddCSLuaFile("client/hax.lua")
 AddCSLuaFile("client/scrubkeys.lua")
+AddCSLuaFile("client/scoreboard.lua")
 
 /*------------------------------------------
 				Network Strings

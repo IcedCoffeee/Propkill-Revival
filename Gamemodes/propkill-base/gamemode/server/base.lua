@@ -19,7 +19,7 @@ function LogPrint(message)
 end
 
 function Notify(ply, message)
-	ply:SendLua("GAMEMODE:AddNotify(\" " .. message .. " \", NOTIFY_GENERIC, 3)")\
+	ply:SendLua("GAMEMODE:AddNotify(\"" .. message .. "\", NOTIFY_GENERIC, 3)")
 	ply:SendLua("surface.PlaySound('buttons/button2.wav')")
 end
 
