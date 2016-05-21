@@ -125,12 +125,7 @@ function GM:HUDDrawScoreBoard()
 	local gamemodeName = GAMEMODE.Name .. " - " .. GAMEMODE.Author
 	
 	surface.SetTextColor( 255, 255, 255, 255 )
-	
-	if ( string.len(hostname) > 32 ) then
-		surface.SetFont( "Default" )
-	else
-		surface.SetFont( "Default" )
-	end
+	surface.SetFont( "stb24" )
 	
 	local txWidth, txHeight = surface.GetTextSize( hostname )
 	local y = yOffset + 15
@@ -140,7 +135,7 @@ function GM:HUDDrawScoreBoard()
 	y = y + txHeight + 2
 	
 	surface.SetTextColor( 255, 255, 255, 255 )
-	surface.SetFont( "Default" )
+	surface.SetFont( "stb24" )
 	local txWidth, txHeight = surface.GetTextSize( gamemodeName )
 	surface.SetTextPos(xOffset + (boardWidth / 2) - (txWidth/2), y)
 	surface.DrawText( gamemodeName )
