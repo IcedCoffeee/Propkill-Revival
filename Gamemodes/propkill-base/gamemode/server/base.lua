@@ -18,6 +18,11 @@ function LogPrint(message)
 	Msg("[Propkill]: " .. message .. "\n")
 end
 
+function Notify(ply, message)
+	ply:SendLua("GAMEMODE:AddNotify(\" " .. message .. " \", NOTIFY_GENERIC, 3)")\
+	ply:SendLua("surface.PlaySound('buttons/button2.wav')")
+end
+
 function shuffle(table)
 	local num = #table
 	for i = 1, num do
