@@ -5,7 +5,7 @@ local twodown 	= false
 local threedown = false
 local fourdown 	= false
 
-hook.Add("Think", "pk_scrub_keys", function()
+/*hook.Add("Think", "pk_scrub_keys", function()
 	if input.IsKeyDown(KEY_1) && !onedown then
 		onedown = true
 		RunConsoleCommand("gm_spawn", "models/props/de_tides/gate_large.mdl")
@@ -30,4 +30,4 @@ hook.Add("Think", "pk_scrub_keys", function()
 	elseif !input.IsKeyDown(KEY_4) then
 		fourdown = false
 	end
-end)
+end)*/
