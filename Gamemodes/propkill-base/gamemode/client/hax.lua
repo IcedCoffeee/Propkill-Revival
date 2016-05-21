@@ -164,13 +164,15 @@ end
 
 concommand.Add("pk_esp", esptoggle)
 
-concommand.Add("ms_rotate", function(ply)
+concommand.Add("ms_rotate", function()
+	local ply = LocalPlayer()
 	local a = ply:EyeAngles()
 	ply:SetEyeAngles(Angle(a.p, a.y-180, a.r))
 end)
 
-concommand.Add("ms_rotate2", function(ply)
+concommand.Add("ms_rotate2", function()
+	local ply = LocalPlayer()
 	local a = ply:EyeAngles() ply:SetEyeAngles(Angle(a.p-a.p-a.p, a.y-180, a.r))
-	ply:ConCommand("+jump")
+	RunConsoleCommand("+jump")
 	timer.Simple(0.2, function() ply:ConCommand("-jump") end)
 end)
