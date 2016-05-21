@@ -1,6 +1,6 @@
 sound.Add( {
 	name = "pkgoresound", 
-	channel = CHAN_BGO+2, 
+	channel = CHAN_AUTO, 
 	volume = 1.0, 
 	level = SNDLVL_80dB, 
 	pitch = { 95, 105 }, 
