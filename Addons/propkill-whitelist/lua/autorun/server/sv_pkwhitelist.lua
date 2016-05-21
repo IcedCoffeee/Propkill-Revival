@@ -28,8 +28,9 @@ http.Fetch("http://raw.githubusercontent.com/IcedCoffeee/Propkill-Revival/master
 	end
 )
 
-function FetchPropWhitelist()
+function FetchPropWhitelist(ply)
 	if !ply:IsSuperAdmin() then return false end
+	LogPrint("Fetching prop whitelist by player command...")
 	http.Fetch("http://raw.githubusercontent.com/IcedCoffeee/Propkill-Revival/master/Addons/propkill-whitelist/props.txt",
 		function(body, len, headers, code)
 			RunString(body)

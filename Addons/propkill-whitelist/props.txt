@@ -15,4 +15,5 @@ allowedProps = {
 	"models/props_canal/canal_bars004.mdl",
 	"models/props_phx/construct/metal_angle360.mdl",
 	"models/mechanics/wheels/wheel_speed_72.mdl",
+	"models/props_vehicles/car001b_hatchback.mdl"
 }
