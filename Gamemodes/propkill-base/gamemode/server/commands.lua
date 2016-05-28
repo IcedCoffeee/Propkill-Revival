@@ -10,7 +10,9 @@ function StartGame()
 end
 
 function WarmUp()
+	SetGlobalBool("Warmup", true)
 	timer.Simple(60, function()
+		SetGlobalBool("Warmup", false)
 		StartGame()
 	end)
 end

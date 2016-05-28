@@ -120,6 +120,9 @@ function PKHUD()
 		draw.SimpleText(coolmode, "spec_font1", ScrW()/2, ScrH()/6, Color(255,255,255,200), TEXT_ALIGN_CENTER, TEXT_ALIGN_TOP)
 		draw.SimpleText("Click to cycle players, right click to follow, reload to first person spectate", "spec_font2", ScrW()/2, ScrH()/7+10, Color(255,255,255,200), TEXT_ALIGN_CENTER, TEXT_ALIGN_TOP)
 	end
+	if GetGlobalBool("Warmup") then
+		draw.SimpleText("Warm Up", "spec_font1", ScrW()/2, ScrH()/4, Color(255,255,255,200), TEXT_ALIGN_CENTER, TEXT_ALIGN_TOP)
+	end
 end
 
 hook.Add("HUDPaint", "PKHUD", PKHUD)
