@@ -77,7 +77,7 @@ surface.CreateFont( "loading_font", {
 				F2 Team Select
 ------------------------------------------*/
 
-net.Receive("teamselect", function()
+net.Receive("pk_teamselect", function()
 	local menu = vgui.Create("DFrame")
 	menu:SetTitle("")
 	menu:SetSize(ScrW()/2.5, ScrH())
@@ -91,32 +91,17 @@ net.Receive("teamselect", function()
 
 	local bRedTeam = vgui.Create("DButton")
 	bRedTeam:SetParent(menu)
-	bRedTeam:SetText("Join Red Team")
+	bRedTeam:SetText("Join Deathmatch")
 	bRedTeam:SetTextColor(Color(0,0,0))
 	bRedTeam:SetFont("team_font")
 	bRedTeam:SetSize(ScrW()/2.5, 150)
-	bRedTeam:SetPos(0, 200)
+	bRedTeam:SetPos(0, 350)
 	function bRedTeam:DoClick()
 		RunConsoleCommand("pk_team", "1")
 		menu:SetVisible(false)
 	end
 	function bRedTeam:Paint(w, h)
 		draw.RoundedBox(0, 0, 0, w, h, team.GetColor(1))
-	end
-
-	local bBlueTeam = vgui.Create("DButton")
-	bBlueTeam:SetParent(menu)
-	bBlueTeam:SetText("Join Blue Team")
-	bBlueTeam:SetTextColor(Color(0,0,0))
-	bBlueTeam:SetFont("team_font")
-	bBlueTeam:SetSize(ScrW()/2.5, 150)
-	bBlueTeam:SetPos(0, 350)
-	function bBlueTeam:DoClick()
-		RunConsoleCommand("pk_team", "2")
-		menu:SetVisible(false)
-	end
-	function bBlueTeam:Paint(w, h)
-		draw.RoundedBox(0, 0, 0, w, h, team.GetColor(2))
 	end
 
 	local bSpec = vgui.Create("DButton")

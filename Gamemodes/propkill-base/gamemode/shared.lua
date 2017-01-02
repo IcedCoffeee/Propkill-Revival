@@ -8,7 +8,7 @@ DeriveGamemode("sandbox")
 function GM:CreateTeams()
 	TEAM_DEATHMATCH = 1
 	TEAM_UNASSIGNED = 0
-	team.SetUp(TEAM_DEATHMATCH, "Red Team", Color(0, 255, 20, 255))
+	team.SetUp(TEAM_DEATHMATCH, "Deathmatch", Color(0, 255, 20, 255))
 	team.SetUp(TEAM_UNASSIGNED, "Unassigned", Color(70, 70, 70, 255))
 end
 

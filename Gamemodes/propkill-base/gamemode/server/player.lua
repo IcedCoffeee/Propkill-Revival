@@ -1,5 +1,5 @@
 function GM:PlayerInitialSpawn(ply)
-	ply:SetTeam(1)
+	ply:SetTeam(TEAM_DEATHMATCH)
 	ply.temp = 0
 end
 
@@ -20,6 +20,7 @@ function GetLeader()
 end
 
 function GM:PlayerSpawn(ply)
+
 	if (ply:Team() == TEAM_UNASSIGNED) then
 		ply:StripWeapons()
 		ply:Spectate(OBS_MODE_ROAMING)
@@ -27,6 +28,7 @@ function GM:PlayerSpawn(ply)
 	else
 		ply:UnSpectate()
 	end
+
 	ply.temp = 0
 	ply:SetHealth(1)
 	ply:SetWalkSpeed(400)
@@ -108,11 +110,14 @@ function GM:PlayerShouldTakeDamage(ply, attacker)
 	if ply:Team() == TEAM_UNASSIGNED then
 		return true
 	end
+	/* why is this in base??????
 	if ply:Team() == attacker.Owner:Team() and ply != attacker.Owner then
 		return false
 	else
 		return true
 	end
+	*/
+	return true
 end
 
 function GM:PlayerDeathSound()
