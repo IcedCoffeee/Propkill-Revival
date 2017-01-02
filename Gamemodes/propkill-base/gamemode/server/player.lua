@@ -201,6 +201,7 @@ hook.Add("KeyPress", "speccontrols", function(ply, key)
 		 end
    end
 end)
+
 /* 
 -- out of order soz --
 function GM:ShowSpare2(ply) net.Start("pkmenu") net.Send(ply) ply:ConCommand("pk_leaderboard") end

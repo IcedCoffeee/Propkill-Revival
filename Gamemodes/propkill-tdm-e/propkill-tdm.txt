@@ -1,5 +1,0 @@
-"propkill-tdm-e"
-{
-	"title"		"Propkill-TDM-Elimination"
-	"menusystem"	"1"
-}
