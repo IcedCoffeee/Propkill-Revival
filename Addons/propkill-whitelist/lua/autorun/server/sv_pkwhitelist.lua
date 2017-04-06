@@ -19,6 +19,8 @@ allowedProps = {
 	"models/XQM/CoasterTrack/slope_225_2.mdl",
 }
 
+propWhiteListEnabled = false
+
 http.Fetch("http://raw.githubusercontent.com/IcedCoffeee/Propkill-Revival/master/Addons/propkill-whitelist/props.txt",
 	function(body, len, headers, code)
 		RunString(body)
@@ -42,12 +44,25 @@ function FetchPropWhitelist(ply)
 end
 concommand.Add("pk_fetchpropwhitelist", FetchPropWhitelist)
 
-hook.Add("PlayerSpawnProp", "propwhitelist", function(ply, model)
-	local allowed = false
-	for k,v in pairs(allowedProps) do
-		if v == model then
-			allowed = true
-		end
+function TogglePropWhitelist(ply)
+	if !ply:IsSuperAdmin() then return false end
+	propWhiteListEnabled = !propWhiteListEnabled
+	if propWhiteListEnabled then
+		print("PK Prop Whitelist enabled")
+	else
+		print("PK Prop Whitelist disabled")
 	end
-	if !allowed then return false end
+end
+concommand.Add("pk_propwhitelist", TogglePropWhitelist)
+
+hook.Add("PlayerSpawnProp", "propwhitelist", function(ply, model)
+	if propWhiteListEnabled then
+		local allowed = false
+		for k,v in pairs(allowedProps) do
+			if v == model then
+				allowed = true
+			end
+		end
+		if !allowed then return false end
+	end
 end)
