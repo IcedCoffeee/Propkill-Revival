@@ -132,9 +132,6 @@ net.Receive("pk_teamselect", function()
 	panel:SetSize(ScrW()/2.5, 150 * RealTeams())
 	panel:Center()
 
-	print("REALTEAMS: " .. RealTeams())
-	print("PANEL SIZE: " .. 150 * RealTeams())
-
 	local tbl = {}
 
 	for k,v in pairs(team.GetAllTeams()) do
