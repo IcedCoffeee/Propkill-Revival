@@ -2,6 +2,9 @@
 		Base stuff for copy-paste
 ------------------------------------------*/ 
 
+cwhite = Color(255,255,255)
+cgrey = Color(200,200,200)
+
 function ChatMsg(message)
 	net.Start("chatmsg")
 		net.WriteTable(message)
@@ -15,7 +18,7 @@ function AllNotify(message)
 end
 
 function LogPrint(message)
-	Msg("[Propkill]: " .. message .. "\n")
+	MsgC(cwhite, "[Propkill]: ", cgrey, message .. "\n")
 end
 
 function Notify(ply, message)

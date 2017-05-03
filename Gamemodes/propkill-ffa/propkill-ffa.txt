@@ -1,4 +1,4 @@
-"propkill-tdm"
+"propkill-ffa"
 {
 	"title"		"Propkill-FFA"
 	"menusystem"	"1"
