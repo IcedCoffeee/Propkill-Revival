@@ -1,4 +1,4 @@
-GM.Name = "Propkill: FFA"
+GM.Name = "Propkill"
 GM.Author = "Iced Coffee & Almighty Laxz"
 GM.Email = "N/A"
 GM.Website = "N/A"

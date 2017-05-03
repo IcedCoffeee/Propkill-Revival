@@ -1,0 +1,5 @@
+"propkill-ctf"
+{
+	"title"		"Propkill-CTF"
+	"menusystem"	"1"
+}
