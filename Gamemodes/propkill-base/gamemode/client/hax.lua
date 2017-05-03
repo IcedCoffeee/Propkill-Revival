@@ -1,9 +1,9 @@
 // wallhack taken from noobler by ownage
 
 local b = debug.getregistry()
-local d = concommand.Add;
-local e = sql;
-local RCC = RunConsoleCommand;
+local d = concommand.Add
+local e = sql
+local RCC = RunConsoleCommand
 local g = CreateMaterial("WallMaterial3", "VertexLitGeneric", {["$basetexture"] = "Models/Debug/debugwhite", ["$nocull"] = 1, ["$model"] = 1})
 local h = {}
 local ENTITY = FindMetaTable("Entity")
@@ -12,7 +12,8 @@ local ms_settings_table = {
 	PlayerWalls=true,
 	PropWalls=true,
 	WallsAlwaysSolid=true,
-	ESP=false,
+	ESP=true,
+	ESPOffset=Vector(0,0,15),
 	Boxes=false,
 	PlayerOpacity=100,
 	PlayerColour={1,1,1},
@@ -23,19 +24,20 @@ local ms_settings_table = {
 
 function ENTITY:IsProp()
 	return self:GetClass()=="prop_physics" or self:GetClass()=="gmod_button"
-end;
+end
 
 local function u()
 	local v = player.GetAll()
 	local v = table.Add(v, ents.FindByClass("prop_physics"))
 	local v = table.Add(v, ents.FindByClass("gmod_button"))
 	return v 
-end;
+end
 
 local function w()
 	h = ents.FindByClass("gmod_button")
 	h = table.Add(h, ents.FindByClass("prop_physics"))
-end;
+	h = table.Add(h, ents.FindByClass("ctf_flag"))
+end
 
 hook.Add("Think", "addbuttons", w)
 
@@ -54,7 +56,7 @@ local function ms_onentcreated(entname)
 			y.Mat=nil 
 		end 
 	end 
-end;
+end
 
 hook.Add("OnEntityCreated", "MSEntityCreated", ms_onentcreated)
 
@@ -62,15 +64,14 @@ local function A()
 	for l,m in pairs(h) do 
 		ms_onentcreated(m)
 	end 
-end;
+end
 
 local function B(C)
 	return Color(255-C.r,255-C.g,255-C.b,255)
-end;
+end
 
 local function ms_prop_screenspace_stuff()
-	local E=ms_settings_table.PropNormalColour;
-	local F=ms_settings_table.PlayerColour;
+	local E=ms_settings_table.PropNormalColour
 	cam.Start3D(EyePos(),EyeAngles())
 	cam.IgnoreZ(true)
 	render.MaterialOverride(g)
@@ -84,17 +85,19 @@ local function ms_prop_screenspace_stuff()
 				m:DrawModel()
 			end 
 		end 
-	end;
+	end
 	
 	if ms_settings_table.PlayerWalls and ms_settings_table.PlayerOpacity then 
 		render.SetBlend(ms_settings_table.PlayerOpacity/100)
-		render.SetColorModulation(F[1],F[2],F[3])
-		for l,m in pairs(player.GetAll()) do 
+		for l,m in pairs(player.GetAll()) do
+			if m:Team() == TEAM_UNASSIGNED then continue end
+			local tc = team.GetColor(m:Team())
+			render.SetColorModulation(tc["r"]/255,tc["g"]/255,tc["b"]/255)
 			if IsValid(m) and m:Alive() and m:GetMoveType()~=0 then 
 				m:DrawModel()
 			end 
 		end 
-	end;
+	end
 
 	cam.IgnoreZ(false)
 
@@ -108,7 +111,7 @@ local function ms_prop_screenspace_stuff()
 					m:DrawModel()
 				end 
 			end 
-		end;
+		end
 	
 		if ms_settings_table.PropWalls and ms_settings_table.PropOpacity then 
 			render.MaterialOverride(g)
@@ -121,7 +124,7 @@ local function ms_prop_screenspace_stuff()
 				end 
 			end 
 		end 
-	end;
+	end
 
 	render.MaterialOverride(nil)
 	render.SetColorModulation(1,1,1)
@@ -129,7 +132,7 @@ local function ms_prop_screenspace_stuff()
 	cam.IgnoreZ(false)
 	render.SuppressEngineLighting(false)
 	cam.End3D()
-end;
+end
 
 hook.Add("RenderScreenspaceEffects", "MSRender", ms_prop_screenspace_stuff)
 
@@ -141,28 +144,22 @@ local function visualstoggle()
 	end
 	ms_settings_table.PropWalls = not ms_settings_table.PropWalls
 	ms_settings_table.PlayerWalls = not ms_settings_table.PlayerWalls
+	ms_settings_table.ESP = not ms_settings_table.ESP
 end
 
 concommand.Add("pk_visuals", visualstoggle)
 
-hook.Add("HUDPaint", "pk_esp", function()
+function pk_esp()
 	for k,v in pairs(player.GetAll()) do
-		if v == LocalPlayer() or !pkESPOn then continue end
-		surface.SetFont("stb24")
-		surface.SetTextColor(255, 255, 255, 255)
-		local pos = v:GetPos():ToScreen()
-		surface.SetTextPos(pos.x, pos.y)
-		surface.DrawText(v:Nick())
+		if v != LocalPlayer() and ms_settings_table.ESP and v:Alive() and v:Team() != TEAM_UNASSIGNED then
+			local pos1 = v:GetBonePosition(v:LookupBone("ValveBiped.Bip01_Head1") or v:GetPos()+Vector(0,0,80)) + ms_settings_table.ESPOffset
+			local pos = pos1:ToScreen()
+			draw.SimpleText(v:Nick(), "stb24", pos.x, pos.y, Color(255,255,255), TEXT_ALIGN_CENTER, TEXT_ALIGN_BOTTOM)
+
+		end
 	end
-end)
-
-pkESPOn = false
-
-local function esptoggle()
-	pkESPOn = not pkESPOn
 end
-
-concommand.Add("pk_esp", esptoggle)
+hook.Add("HUDPaint", "pk_esp", pk_esp)
 
 local function msrotate()
 	local ply = LocalPlayer()
