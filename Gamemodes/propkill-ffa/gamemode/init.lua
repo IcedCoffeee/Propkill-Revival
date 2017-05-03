@@ -12,7 +12,7 @@ include("server/commands.lua")
 
 AddCSLuaFile("cl_init.lua")
 AddCSLuaFile("shared.lua")
-AddCSLuaFile("client/derma.lua")
+AddCSLuaFile("client/hud.lua")
 
 /*------------------------------------------
 				Network Strings
