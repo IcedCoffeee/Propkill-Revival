@@ -258,4 +258,3 @@ function GM:HUDDrawScoreBoard()
 	GAMEMODE.ScoreDesign.Height = GAMEMODE.ScoreDesign.Height / 3
 	
 end
-

@@ -5,5 +5,4 @@ function TDMHUD()
 		draw.SimpleText(GetGlobalInt("TDM_Time_Left"), "ltb24", ScrW() / 2 - 50, 10, Color(255, 255, 255, 200), 0, 0)
 	end
 end
-
 hook.Add("HUDPaint", "TDMHUD", TDMHUD)
