@@ -32,7 +32,7 @@ function ENT:Think()
 			self.Entity:SetParent(nil)
 			self.Entity:SetAngles(Angle(0,0,0))
 			self:SetNW2Entity("Attached", NULL)
-			v.Flag = NULL
+			attached.Flag = NULL
 		end
 	end
 end

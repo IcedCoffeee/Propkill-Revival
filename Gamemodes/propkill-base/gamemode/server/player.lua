@@ -1,6 +1,10 @@
 function GM:PlayerInitialSpawn(ply)
-	ply:SetTeam(TEAM_DEATHMATCH)
+	ply:SetTeam(TEAM_UNASSIGNED)
 	ply.temp = 0
+	if ply:IsBot() then
+		ply:SetTeam(math.random(1,2))
+		ply:Spawn()
+	end
 end
 
 function GetLeader()

@@ -20,6 +20,9 @@ function GM:PlayerSpawnVehicle(ply) Notify(ply, "You can only spawn props!") ret
 function GM:PlayerSpawnNPC(ply) Notify(ply, "You can only spawn props!") return false end 
 function GM:PlayerSpawnRagdoll(ply) Notify(ply, "You can only spawn props!") return false end
 function GM:PlayerSpawnProp(ply, model)
+	if not ply:Alive() then
+		return false
+	end
 	if model == "models/props/de_tides/gate_large.mdl" and GetGlobalBool("PK_LockersOnly") == true then
 		ply:SendLua("GAMEMODE:AddNotify(\"Lockers only is enabled!\", NOTIFY_GENERIC, 6)")
 		ply:SendLua("surface.PlaySound('buttons/button2.wav')")
@@ -30,9 +33,8 @@ function GM:PlayerSpawnProp(ply, model)
 		ply:SendLua("GAMEMODE:AddNotify(\"You can't spawn props as a Spectator!\", NOTIFY_GENERIC, 3)")
 		ply:SendLua("surface.PlaySound('buttons/button2.wav')")
 		return false
-	else
-		return true
 	end
+	return true
 end	
 
 function GM:InitPostEntity()

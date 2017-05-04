@@ -1,260 +1,212 @@
-/*---------------------------------------------------------
-   Name: gamemode:ScoreboardShow( )
-   Desc: Sets the scoreboard to visible
----------------------------------------------------------*/
+surface.CreateFont("pk_scoreboardfont", {
+	font = "stb24",
+	size = 32,
+	weight = 650,
+	blursize = 0,
+	scanlines = 0,
+	antialias = true,
+	underline = false,
+	italic = false,
+	strikeout = false,
+	symbol = false,
+	rotary = false,
+	shadow = true,
+	additive = false,
+	outline = false,
+})
+
+surface.CreateFont("pk_teamfont", {
+	font = "stb24",
+	size = 18,
+	weight = 650,
+	blursize = 0,
+	scanlines = 0,
+	antialias = true,
+	underline = false,
+	italic = false,
+	strikeout = false,
+	symbol = false,
+	rotary = false,
+	shadow = false,
+	additive = false,
+	outline = false,
+})
+
 function GM:ScoreboardShow()
-	GAMEMODE.ShowScoreboard = true
-end
-
-/*---------------------------------------------------------
-   Name: gamemode:ScoreboardHide( )
-   Desc: Hides the scoreboard
----------------------------------------------------------*/
-function GM:ScoreboardHide()
-	GAMEMODE.ShowScoreboard = false
-end
-
-// TODO: CLEAN THIS CODE
-
-function GM:GetTeamScoreInfo()
-
-	local TeamInfo = {}
+	scoreboardframe = vgui.Create("DFrame")
+	scoreboardframe:SetTitle("")
+	//frame:SetSize(800, 800)
+	scoreboardframe:SetDraggable(false)
+	scoreboardframe:ShowCloseButton(false)
+	function scoreboardframe:Paint(w, h)
 	
-	for id,pl in pairs( player.GetAll() ) do
+	end
+	//frame:MakePopup()
 	
-		local _team = pl:Team()
-		local _frags = pl:Frags()
-		local _deaths = pl:Deaths()
-		local _ping = pl:Ping()
-
-		local _totalkills = 0
-		local _totaldeaths = 0
-
-		if pl.pkdata != nil then
-			_totalkills = pl.pkdata.total_kills
-			_totaldeaths = pl.pkdata.total_deaths
-		end
-		
-		if (not TeamInfo[_team]) then
-			TeamInfo[_team] = {}
-			TeamInfo[_team].TeamName = team.GetName( _team )
-			TeamInfo[_team].Color = team.GetColor( _team )
-			TeamInfo[_team].Players = {}
-		end		
-		
-		local PlayerInfo = {}
-		PlayerInfo.Frags = _frags
-		PlayerInfo.Deaths = _deaths
-		PlayerInfo.TotalKills = _totalkills
-		PlayerInfo.TotalDeaths = _totaldeaths
-		PlayerInfo.Score = _frags - _deaths
-		PlayerInfo.Ping = _ping
-		PlayerInfo.Name = pl:Nick()
-		PlayerInfo.PlayerObj = pl
-		
-		local insertPos = #TeamInfo[_team].Players + 1
-		for idx,info in pairs(TeamInfo[_team].Players) do
-			if (PlayerInfo.Frags > info.Frags) then
-				insertPos = idx
-				break
-			elseif (PlayerInfo.Frags == info.Frags) then
-				if (PlayerInfo.Deaths < info.Deaths) then
-					insertPos = idx
-					break
-				elseif (PlayerInfo.Deaths == info.Deaths) then
-					if (PlayerInfo.Name < info.Name) then
-						insertPos = idx
-						break
-					end
+	local base = vgui.Create("DPanel", scoreboardframe)
+	//base:Dock(FILL)
+	base:SetWidth(800)
+	function base:Paint(w,h)
+		//draw.RoundedBox(0, 0, 0, w, h, Color(236,240,241))
+	end
+	
+	local header = vgui.Create("DPanel", base)
+	header:Dock(TOP)
+	header:DockMargin(0,0,0,0)
+	header:SetHeight(80)
+	function header:Paint(w,h)
+		draw.RoundedBox(0, 0, 0, w, h, Color(33,150,243))
+	end
+	
+	local svrname = vgui.Create("DLabel", header)
+	svrname:Dock(TOP)
+	svrname:SetHeight(50)
+	svrname:SetText("")
+	function svrname:Paint(w,h)
+		draw.SimpleText(GetHostName(), "pk_scoreboardfont", w/2, h/2, Color(255,255,255), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
+	end
+	
+	local gmname = vgui.Create("DLabel", header)
+	gmname:Dock(TOP)
+	gmname:SetHeight(20)
+	gmname:SetText("")
+	function gmname:Paint(w,h)
+		draw.SimpleText(GetGlobalString("PK_CurrentMode", ""), "stb24", w/2, h/2-3, Color(255,255,255), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
+	end
+	
+	local columns = vgui.Create("DPanel", base)
+	columns:SetSize(0,30)
+	columns:Dock(TOP)
+	columns:DockMargin(0,0,0,10)
+	function columns:Paint(w,h)
+		draw.RoundedBox(0, 0, 0, w, h, Color(97,97,97))
+	end
+	
+	local name = vgui.Create("DLabel", columns)
+	name:SetText("")
+	name:Dock(LEFT)
+	name:SetWidth(300)
+	function name:Paint(w,h)
+		draw.SimpleText("Name", "pk_teamfont", 20, h/2, Color(255,255,255), TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
+	end
+	
+	local ping = vgui.Create("DLabel", columns)
+	ping:SetText("")
+	ping:Dock(RIGHT)
+	ping:SetWidth(120)
+	function ping:Paint(w,h)
+		draw.SimpleText("Ping", "pk_teamfont", 20, h/2, Color(255,255,255), TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
+	end
+	
+	local deaths = vgui.Create("DLabel", columns)
+	deaths:SetText("")
+	deaths:Dock(RIGHT)
+	deaths:SetWidth(120)
+	function deaths:Paint(w,h)
+		draw.SimpleText("Deaths", "pk_teamfont", 20, h/2, Color(255,255,255), TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
+	end
+	
+	local kills = vgui.Create("DLabel", columns)
+	kills:SetText("")
+	kills:Dock(RIGHT)
+	kills:SetWidth(120)
+	function kills:Paint(w,h)
+		draw.SimpleText("Kills", "pk_teamfont", 20, h/2, Color(255,255,255), TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
+	end
+	
+	for k,v in pairs(team.GetAllTeams()) do
+		if k < 1000 and #team.GetPlayers(k) > 0 then
+			local cat = vgui.Create("DPanel", base)
+			cat:SetSize(0,30)
+			cat:Dock(TOP)
+			cat:DockMargin(0,0,0,0)
+			function cat:Paint(w,h)
+				draw.RoundedBox(0, 0, 0, w, h, team.GetColor(k))
+			end
+			local teamname = vgui.Create("DLabel", cat)
+			teamname:SetText("")
+			teamname:Dock(FILL)
+			function teamname:Paint(w,h)
+				draw.SimpleText(team.GetName(k) .. " (" .. team.GetScore(k) .. ")", "pk_teamfont", w/2, h/2, Color(255,255,255), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
+			end
+			
+			local playerframe = vgui.Create("DPanel", base)
+			playerframe:Dock(TOP)
+			playerframe:DockMargin(0,0,0,10)
+			function playerframe:Paint(w,h)
+				local tc = team.GetColor(k)
+				local fade = Color(tc["r"],tc["g"],tc["b"],tc["a"]/2)
+				//draw.RoundedBox(0, 0, 0, w, h, fade)
+			end
+			
+			for l,m in pairs(team.GetPlayers(k)) do
+				local playerrow = vgui.Create("DPanel", playerframe)
+				playerrow:Dock(TOP)
+				playerrow:DockMargin(0,0,0,5)
+				playerrow:SetHeight(25)
+				function playerrow:Paint(w,h)
+					local tc = team.GetColor(k)
+					local fade = Color(tc["r"],tc["g"],tc["b"],tc["a"]/1.5)
+					draw.RoundedBox(0, 0, 0, w, h, Color(80,80,80,225))
 				end
+				
+				local playername = vgui.Create("DLabel", playerrow)
+				playername:SetText("")
+				playername:SetWidth(160)
+				playername:Dock(LEFT)
+				function playername:Paint(w,h)
+					draw.SimpleText(m:Nick(), "pk_teamfont", 20, h/2, Color(255,255,255), TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
+				end
+				
+				local playerping = vgui.Create("DLabel", playerrow)
+				playerping:SetText("")
+				playerping:Dock(RIGHT)
+				playerping:SetWidth(120)
+				function playerping:Paint(w,h)
+					draw.SimpleText(m:Ping(), "pk_teamfont", 20, h/2, Color(255,255,255), TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
+				end
+				
+				local playerdeaths = vgui.Create("DLabel", playerrow)
+				playerdeaths:SetText("")
+				playerdeaths:Dock(RIGHT)
+				playerdeaths:SetWidth(120)
+				function playerdeaths:Paint(w,h)
+					draw.SimpleText(m:Deaths(), "pk_teamfont", 20, h/2, Color(255,255,255), TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
+				end
+				
+				local playerkills = vgui.Create("DLabel", playerrow)
+				playerkills:SetText("")
+				playerkills:Dock(RIGHT)
+				playerkills:SetWidth(120)
+				function playerkills:Paint(w,h)
+					draw.SimpleText(m:Frags(), "pk_teamfont", 20, h/2, Color(255,255,255), TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
+				end
+				
+				//local playerscore = vgui.Create("DLabel", playerrow)
+				//playerscore:SetText("")
+				//playerscore:Dock(RIGHT)
+				//playerscore:SetWidth(120)
+				//function playerscore:Paint(w,h)
+				//	draw.SimpleText(0, "pk_teamfont", 20, h/2, Color(255,255,255), TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
+				//end
+				
 			end
+			playerframe:InvalidateLayout(true)
+			playerframe:SizeToChildren(false, true)
+			//local plylist = vgui.Create("DPanel", cat)
+			//plylist:Dock(FILL)
+			//function plylist:Paint(w,h)
+			//	draw.RoundedBox(0, 0, 0, w, h, Color(0,255,0))
+			//end
 		end
-		
-		table.insert(TeamInfo[_team].Players, insertPos, PlayerInfo)
 	end
-	
-	return TeamInfo
+	base:InvalidateLayout(true)
+	base:SizeToChildren(false,true)
+	scoreboardframe:InvalidateLayout(true)
+	scoreboardframe:SizeToChildren(true, true)
+	scoreboardframe:Center()
 end
 
-function GM:HUDDrawScoreBoard()
-
-	if (!GAMEMODE.ShowScoreboard) then return end
-	
-	if (GAMEMODE.ScoreDesign == nil) then
-	
-		GAMEMODE.ScoreDesign = {}
-		GAMEMODE.ScoreDesign.HeaderY = 0
-		GAMEMODE.ScoreDesign.Height = ScrH() / 2
-	
-	end
-	
-	local alpha = 255
-
-	local ScoreboardInfo = self:GetTeamScoreInfo()
-	
-	local xOffset = ScrW() / 20
-	local yOffset = 32
-	local scrWidth = ScrW()
-	local scrHeight = ScrH() - 64
-	local boardWidth = scrWidth - (2* xOffset)
-	local boardHeight = scrHeight
-	local colWidth = 100
-	
-	boardWidth = math.Clamp( boardWidth, 600, 800 )
-	boardHeight = GAMEMODE.ScoreDesign.Height
-	
-	xOffset = (ScrW() - boardWidth) / 2.0
-	yOffset = (ScrH() - boardHeight) / 2.0
-	yOffset = yOffset - ScrH() / 4.0
-	yOffset = math.Clamp( yOffset, 32, ScrH() )
-	
-	// Background
-	surface.SetDrawColor( 100, 150, 250, 200 )
-	surface.DrawRect( xOffset, yOffset, boardWidth, GAMEMODE.ScoreDesign.HeaderY)
-	
-	surface.SetDrawColor( 150, 150, 150, 200 )
-	surface.DrawRect( xOffset, yOffset+GAMEMODE.ScoreDesign.HeaderY, boardWidth, boardHeight-GAMEMODE.ScoreDesign.HeaderY)
-	
-	// Outline
-	surface.SetDrawColor( 0, 0, 0, 150 )
-	surface.DrawOutlinedRect( xOffset, yOffset, boardWidth, boardHeight )
-	surface.SetDrawColor( 0, 0, 0, 50 )
-	surface.DrawOutlinedRect( xOffset-1, yOffset-1, boardWidth+2, boardHeight+2 )
-	
-	local hostname = GetHostName()
-	local gamemodeName = GAMEMODE.Name .. " - " .. GAMEMODE.Author
-	
-	surface.SetTextColor( 255, 255, 255, 255 )
-	surface.SetFont( "stb24" )
-	
-	local txWidth, txHeight = surface.GetTextSize( hostname )
-	local y = yOffset + 15
-	surface.SetTextPos(xOffset + (boardWidth / 2) - (txWidth/2), y)
-	surface.DrawText( hostname )
-	
-	y = y + txHeight + 2
-	
-	surface.SetTextColor( 255, 255, 255, 255 )
-	surface.SetFont( "stb24" )
-	local txWidth, txHeight = surface.GetTextSize( gamemodeName )
-	surface.SetTextPos(xOffset + (boardWidth / 2) - (txWidth/2), y)
-	surface.DrawText( gamemodeName )
-	
-	y = y + txHeight + 4
-	GAMEMODE.ScoreDesign.HeaderY = y - yOffset
-	
-	surface.SetDrawColor( 0, 0, 0, 100 )
-	surface.DrawRect( xOffset, y-1, boardWidth, 1)
-	
-	surface.SetDrawColor( 255, 255, 255, 20 )
-	surface.DrawRect( xOffset + boardWidth - (colWidth*1), y, colWidth, boardHeight-y+yOffset )
-	
-	surface.SetDrawColor( 255, 255, 255, 20 )
-	surface.DrawRect( xOffset + boardWidth - (colWidth*3), y, colWidth, boardHeight-y+yOffset )
-
-	surface.SetDrawColor( 255, 255, 255, 20 )
-	surface.DrawRect( xOffset + boardWidth - (colWidth*5), y, colWidth, boardHeight-y+yOffset )
-	
-	
-	surface.SetFont( "Default" )
-	local txWidth, txHeight = surface.GetTextSize( "W" )
-	
-	surface.SetDrawColor( 0, 0, 0, 100 )
-	surface.DrawRect( xOffset, y, boardWidth, txHeight + 6 )
-
-	y = y + 2
-	
-	surface.SetTextPos( xOffset + 16,								y)	surface.DrawText("#Name")
-	surface.SetTextPos( xOffset + boardWidth - (colWidth*5) + 8,	y)	surface.DrawText(" Total Kills")
-	surface.SetTextPos( xOffset + boardWidth - (colWidth*4) + 8,	y)	surface.DrawText(" Total Deaths")
-	surface.SetTextPos( xOffset + boardWidth - (colWidth*3) + 8,	y)	surface.DrawText("#Score")
-	surface.SetTextPos( xOffset + boardWidth - (colWidth*2) + 8,	y)	surface.DrawText("#Deaths")
-	surface.SetTextPos( xOffset + boardWidth - (colWidth*1) + 8,	y)	surface.DrawText("#Ping")
-	
-	y = y + txHeight + 4
-
-	local yPosition = y
-	for team,info in pairs(ScoreboardInfo) do
-		
-		local teamText = info.TeamName .. "  (" .. #info.Players .. " Players)"
-		
-		surface.SetFont( "Default" )
-		surface.SetTextColor( 0, 0, 0, 255 )
-		
-		txWidth, txHeight = surface.GetTextSize( teamText )
-		surface.SetDrawColor( info.Color.r, info.Color.g, info.Color.b, 255 )
-		surface.DrawRect( xOffset+1, yPosition, boardWidth-2, txHeight + 4)
-		yPosition = yPosition + 2
-		surface.SetTextPos( xOffset + boardWidth/2 - txWidth/2, yPosition )
-		surface.DrawText( teamText )
-		yPosition = yPosition + 2
-						
-
-		
-		yPosition = yPosition + txHeight + 2
-		
-		for index,plinfo in pairs(info.Players) do
-		
-			surface.SetFont( "Default" )
-			surface.SetTextColor( info.Color.r, info.Color.g, info.Color.b, 200 )
-			surface.SetTextPos( xOffset + 16, yPosition )
-			txWidth, txHeight = surface.GetTextSize( plinfo.Name )
-			
-			if (plinfo.PlayerObj == LocalPlayer()) then
-				surface.SetDrawColor( info.Color.r, info.Color.g, info.Color.b, 50 )
-				surface.DrawRect( xOffset+1, yPosition, boardWidth - 2, txHeight + 2)
-				surface.SetTextColor( info.Color.r, info.Color.g, info.Color.b, 255 )
-			end
-			
-			
-			local px, py = xOffset + 16, yPosition
-			local textcolor = Color( info.Color.r, info.Color.g, info.Color.b, alpha )
-			local shadowcolor = Color( 0, 0, 0, alpha * 0.8 )
-			
-			draw.SimpleText( plinfo.Name, "Default", px+1, py+1, shadowcolor )
-			draw.SimpleText( plinfo.Name, "Default", px, py, textcolor )
-
-			px = xOffset + boardWidth - (colWidth*5) + 8
-			draw.SimpleText( plinfo.TotalKills, "Default", px+1, py+1, shadowcolor )
-			draw.SimpleText( plinfo.TotalKills, "Default", px, py, textcolor )
-
-			px = xOffset + boardWidth - (colWidth*4) + 8
-			draw.SimpleText( plinfo.TotalDeaths, "Default", px+1, py+1, shadowcolor )
-			draw.SimpleText( plinfo.TotalDeaths, "Default", px, py, textcolor )
-
-			px = xOffset + boardWidth - (colWidth*3) + 8			
-			draw.SimpleText( plinfo.Frags, "Default", px+1, py+1, shadowcolor )
-			draw.SimpleText( plinfo.Frags, "Default", px, py, textcolor )
-			
-			px = xOffset + boardWidth - (colWidth*2) + 8			
-			draw.SimpleText( plinfo.Deaths, "Default", px+1, py+1, shadowcolor )
-			draw.SimpleText( plinfo.Deaths, "Default", px, py, textcolor )
-			
-			px = xOffset + boardWidth - (colWidth*1) + 8			
-			draw.SimpleText( plinfo.Ping, "Default", px+1, py+1, shadowcolor )
-			draw.SimpleText( plinfo.Ping, "Default", px, py, textcolor )
-			
-			//surface.DrawText( plinfo.Name )
-			//surface.SetTextPos( xOffset + 16 + 2, yPosition + 2 )
-			//surface.SetTextColor( 0, 0, 0, 200 )
-			//surface.DrawText( plinfo.Name )
-
-			//surface.SetTextPos( xOffset + boardWidth - (colWidth*3) + 8, yPosition )
-			//surface.DrawText( plinfo.Frags )
-
-			//surface.SetTextPos( xOffset + boardWidth - (colWidth*2) + 8, yPosition )
-			//surface.DrawText( plinfo.Deaths )
-
-			//surface.SetTextPos( xOffset + boardWidth - (colWidth*1) + 8, yPosition )
-			//surface.DrawText( plinfo.Ping )
-
-			yPosition = yPosition + txHeight + 3
-		end
-	end
-	
-	yPosition = yPosition + 8
-	
-	GAMEMODE.ScoreDesign.Height = (GAMEMODE.ScoreDesign.Height * 2) + (yPosition-yOffset)
-	GAMEMODE.ScoreDesign.Height = GAMEMODE.ScoreDesign.Height / 3
-	
+function GM:ScoreboardHide()
+	scoreboardframe:Close()
 end

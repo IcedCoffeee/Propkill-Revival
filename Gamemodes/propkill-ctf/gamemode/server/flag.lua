@@ -29,7 +29,6 @@ function CaptureCheck()
 		for j,m in pairs(ents.FindInSphere(v, GAMEMODE.PickupRange)) do
 			if IsValid(m) and m:IsPlayer() and IsValid(m.Flag) and m.Flag:GetNW2Entity("Attached") == m and m.Flag:GetTeam() != k then
 				ResetFlag(m.Flag)
-				print("Asd")
 				team.AddScore(m:Team(), 1)
 			end
 		end
