@@ -37,7 +37,7 @@ end
 
 function GM:InitPostEntity()
 	local physData = physenv.GetPerformanceSettings()
-	physData.MaxVelocity = 2000
+	physData.MaxVelocity = 2280
 	physData.MaxAngularVelocity = 3636
 	physenv.SetPerformanceSettings(physData)
 		game.ConsoleCommand("sv_allowcslua 1\n")

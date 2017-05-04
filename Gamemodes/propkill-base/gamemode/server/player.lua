@@ -63,6 +63,7 @@ function GM:PlayerDeath(ply, inflictor, attacker)
 		end
 	end
 	ply.temp = 0
+	ply.NextSpawnTime = CurTime() + 1
 	net.Start("KilledByProp")
 	net.WriteEntity(ply)
 	net.WriteString(inflictor:GetClass())
