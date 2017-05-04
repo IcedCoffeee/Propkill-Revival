@@ -7,6 +7,7 @@
 ------------------------------------------*/ 
 
 include("shared.lua")
+include("server/flag.lua")
 
 AddCSLuaFile("cl_init.lua")
 AddCSLuaFile("shared.lua")

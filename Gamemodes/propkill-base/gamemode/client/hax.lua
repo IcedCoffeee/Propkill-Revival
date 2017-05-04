@@ -18,8 +18,8 @@ local ms_settings_table = {
 	PlayerOpacity=100,
 	PlayerColour={1,1,1},
 	PropOpacity=30,
-	PropNormalColour={0,1,0},
-	PropWallOpacity=30
+	PropNormalColour={1,1,0},
+	PropWallOpacity=60
 }
 
 function ENTITY:IsProp()
@@ -78,9 +78,14 @@ local function ms_prop_screenspace_stuff()
 	render.SuppressEngineLighting(true)
 	if ms_settings_table.PropWalls and ms_settings_table.PropWallOpacity then 
 		render.SetBlend(ms_settings_table.PropWallOpacity/100)
-		render.SetColorModulation(E[1],E[2],E[3])
-		for l,m in pairs(h) do 
+		for l,m in pairs(h) do
 			if IsValid(m) then 
+				if m:GetClass() == "ctf_flag" then
+					local tc = team.GetColor(m:GetTeam())
+					render.SetColorModulation(tc["r"]/255,tc["g"]/255,tc["b"]/255)
+				else
+					render.SetColorModulation(E[1],E[2],E[3])
+				end
 				m:SetNoDraw(true)
 				m:DrawModel()
 			end 
@@ -152,7 +157,7 @@ concommand.Add("pk_visuals", visualstoggle)
 function pk_esp()
 	for k,v in pairs(player.GetAll()) do
 		if v != LocalPlayer() and ms_settings_table.ESP and v:Alive() and v:Team() != TEAM_UNASSIGNED then
-			local pos1 = v:GetBonePosition(v:LookupBone("ValveBiped.Bip01_Head1") or v:GetPos()+Vector(0,0,80)) + ms_settings_table.ESPOffset
+			local pos1 = v:GetBonePosition(v:LookupBone("ValveBiped.Bip01_Head1")) + ms_settings_table.ESPOffset or v:GetPos()+Vector(0,0,80)
 			local pos = pos1:ToScreen()
 			draw.SimpleText(v:Nick(), "stb24", pos.x, pos.y, Color(255,255,255), TEXT_ALIGN_CENTER, TEXT_ALIGN_BOTTOM)
 
@@ -160,6 +165,17 @@ function pk_esp()
 	end
 end
 hook.Add("HUDPaint", "pk_esp", pk_esp)
+
+function pk_flagesp()
+	for k,v in pairs(ents.GetAll()) do
+		if v:GetClass() == "ctf_flag" then
+			local pos1 = v:GetPos()+Vector(0,0,100)
+			local pos = pos1:ToScreen()
+			draw.SimpleText(string.Replace(team.GetName(v:GetTeam()), "Team", "Flag"), "stb24", pos.x, pos.y, team.GetColor(v:GetTeam()) , TEXT_ALIGN_CENTER, TEXT_ALIGN_BOTTOM)
+		end
+	end
+end
+hook.Add("HUDPaint", "pk_flagesp", pk_flagesp)
 
 local function msrotate()
 	local ply = LocalPlayer()

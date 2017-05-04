@@ -111,13 +111,11 @@ function GM:PlayerShouldTakeDamage(ply, attacker)
 	if ply:Team() == TEAM_UNASSIGNED then
 		return true
 	end
-	/* why is this in base??????
-	if ply:Team() == attacker.Owner:Team() and ply != attacker.Owner then
+	if GAMEMODE.TeamBased and ply:Team() == attacker.Owner:Team() and ply != attacker.Owner then
 		return false
 	else
 		return true
 	end
-	*/
 	return true
 end
 

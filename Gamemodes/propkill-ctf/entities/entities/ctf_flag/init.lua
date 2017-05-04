@@ -13,15 +13,18 @@ function ENT:Initialize()
 	self:SetTeam(0)
 end
 
-
 function ENT:Think()
 	local attached = self:GetNW2Entity("Attached")
-	if not IsValid(attached) then
+	if not IsValid(attached) and not IsValid(attached.Flag) then
 		for k,v in pairs(player.GetAll()) do
-			if v:GetPos():Distance(self.Entity:GetPos()) < 120 then
+			if v:GetPos():Distance(self.Entity:GetPos()) < GAMEMODE.PickupRange and v:Team() != self:GetTeam() and v:Alive() then
 				self.Entity:SetParent(v, 18)
 				self.Entity:SetPos(v:GetPos()+Vector(0,0,100))
 				self:SetNW2Entity("Attached", v)
+				v.Flag = self
+			end
+			if v:GetPos():Distance(self.Entity:GetPos()) < GAMEMODE.PickupRange and v:Team() == self:GetTeam() and v:Alive() then
+				ResetFlag(self.Entity)
 			end
 		end
 	else
@@ -29,6 +32,7 @@ function ENT:Think()
 			self.Entity:SetParent(nil)
 			self.Entity:SetAngles(Angle(0,0,0))
 			self:SetNW2Entity("Attached", NULL)
+			v.Flag = NULL
 		end
 	end
 end
