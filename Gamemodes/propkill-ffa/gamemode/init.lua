@@ -14,13 +14,6 @@ AddCSLuaFile("cl_init.lua")
 AddCSLuaFile("shared.lua")
 AddCSLuaFile("client/hud.lua")
 
-/*------------------------------------------
-				Network Strings
-------------------------------------------*/ 
-
-util.AddNetworkString("pk_teamselect")
-util.AddNetworkString("pk_helpmenu")
-
 function GM:Initialize()
 	LogPrint("Initializing...")
 	SetGlobalString("PK_CurrentMode", "Free For All")
