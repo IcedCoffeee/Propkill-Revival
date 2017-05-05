@@ -11,6 +11,7 @@ include("server/player.lua")
 include("server/entity.lua")
 include("server/commands.lua")
 include("server/base.lua")
+include("shared/entity.lua")
 
 AddCSLuaFile("cl_init.lua")
 AddCSLuaFile("shared.lua")
@@ -19,6 +20,7 @@ AddCSLuaFile("client/hax.lua")
 AddCSLuaFile("client/scrubkeys.lua")
 AddCSLuaFile("client/scoreboard.lua")
 AddCSLuaFile("client/derma.lua")
+AddCSLuaFile("shared/entity.lua")
 
 /*------------------------------------------
 				Network Strings

@@ -1,14 +1,7 @@
 hook.Add("PlayerSpawnedProp", "pk_setpropowner", function(ply, model, ent) 
 	ent.Owner = ply
+	ent:SetNW2Entity("Owner", ply)
 end)
-
-function GM:PhysgunPickup( ply, ent )
-	if ent.Owner == nil then
-		ent.Owner = ply
-	end
-	if ent:IsPlayer() or ent.Owner ~= ply then return false end
-	return true
-end 
 
 function GM:OnPhysgunReload() return false end
 function GM:PlayerSpawnSENT(ply) Notify(ply, "You can only spawn props!")return false end

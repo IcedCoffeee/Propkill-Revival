@@ -4,6 +4,7 @@ include("client/hax.lua")
 include("client/scrubkeys.lua")
 include("client/scoreboard.lua")
 include("client/derma.lua")
+include("shared/entity.lua")
 
 net.Receive("chatmsg", function(len) 
 	chat.AddText(unpack(net.ReadTable()))
