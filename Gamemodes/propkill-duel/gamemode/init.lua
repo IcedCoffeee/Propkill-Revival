@@ -8,6 +8,7 @@
 
 include("shared.lua")
 include("server/commands.lua")
+include("server/player.lua")
 
 AddCSLuaFile("cl_init.lua")
 AddCSLuaFile("shared.lua")
