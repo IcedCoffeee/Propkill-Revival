@@ -30,6 +30,7 @@ AddCSLuaFile("shared/entity.lua")
 util.AddNetworkString("KilledByProp")
 util.AddNetworkString("pk_chatmsg")
 util.AddNetworkString("pk_notify")
+util.AddNetworkString("pk_gamenotify")
 util.AddNetworkString("killstreakmessage")
 
 function GM:Initialize()
