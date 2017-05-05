@@ -16,5 +16,4 @@ function PropkillCTFHUD()
 		end
 	end
 end
-
 hook.Add("HUDPaint", "pk_ctf_hud", PropkillCTFHUD)

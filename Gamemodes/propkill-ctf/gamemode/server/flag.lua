@@ -24,11 +24,19 @@ end
 hook.Add("InitPostEntity", "pk_spawnflags", SpawnFlags)
 hook.Add("PostCleanupMap", "pk_spawnflags", SpawnFlags)
 
+function CaptureEffects(pos, ply)
+	local ed = EffectData()
+	ed:SetOrigin(pos)
+	util.Effect("ManhackSparks", ed, true, true)
+	ply:EmitSound("buttons/blip1.wav")
+end
+
 function CaptureCheck()
 	for k,v in pairs(flagpositions) do
 		for j,m in pairs(ents.FindInSphere(v, GAMEMODE.PickupRange)) do
 			if IsValid(m) and m:IsPlayer() and IsValid(m.Flag) and m.Flag:GetNW2Entity("Attached") == m and m.Flag:GetTeam() != k then
 				AllNotify(m:Nick() .. " has captured the " .. team.GetName(m.Flag:GetTeam()) .. " flag!") -- temporary
+				CaptureEffects(v, m)
 				ResetFlag(m.Flag)
 				team.AddScore(m:Team(), 1)
 			end
