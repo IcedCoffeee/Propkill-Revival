@@ -11,6 +11,7 @@ include("server/flag.lua")
 
 AddCSLuaFile("cl_init.lua")
 AddCSLuaFile("shared.lua")
+AddCSLuaFile("client/hud.lua")
 
 /*------------------------------------------
 				Network Strings
