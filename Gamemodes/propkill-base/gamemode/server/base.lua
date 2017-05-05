@@ -1,12 +1,8 @@
-/*------------------------------------------
-		Base stuff for copy-paste
-------------------------------------------*/ 
-
 cwhite = Color(255,255,255)
 cgrey = Color(200,200,200)
 
 function ChatMsg(message)
-	net.Start("chatmsg")
+	net.Start("pk_chatmsg")
 		net.WriteTable(message)
 	net.Broadcast()
 end
@@ -17,9 +13,11 @@ function ChatNotify(message)
 	net.Broadcast()
 end
 
-function AllNotify(message)
+function NotifyAll(message)
 	for k,v in pairs(player.GetAll()) do
-		v:SendLua("GAMEMODE:AddNotify(\"" .. message .. "\", NOTIFY_GENERIC, 6)")
+		net.Start("pk_notify")
+			net.WriteString(message)
+		net.Send(v)
 	end
 end
 
@@ -28,8 +26,9 @@ function LogPrint(message)
 end
 
 function Notify(ply, message)
-	ply:SendLua("GAMEMODE:AddNotify(\"" .. message .. "\", NOTIFY_GENERIC, 3)")
-	ply:SendLua("surface.PlaySound('buttons/button2.wav')")
+	net.Start("pk_notify")
+		net.WriteString(message)
+	net.Send(ply)
 end
 
 function shuffle(table)

@@ -8,6 +8,13 @@ function ResetFlag(ent)
 	ent:SetPos(flagpositions[ent:GetTeam()])
 end
 
+function DropFlag(ent)
+	ent:SetParent(nil)
+	ent:SetAngles(Angle(0,0,0))
+	ent:SetPos(ent:GetPos()-Vector(0,0,40))
+	ent:SetNW2Entity("Attached", NULL)
+end
+
 function SpawnFlags()
 	for k,v in pairs(ents.GetAll()) do
 		if v:GetClass() == "ctf_flag" then
@@ -47,9 +54,7 @@ hook.Add("Think", "pk_checkcapture", CaptureCheck)
 
 function DropOnDisconnect(ply)
 	if IsValid(ply.Flag) and ply.Flag:GetClass() == "ctf_flag" then
-		ply.Flag:SetParent(nil)
-		ply.Flag:SetAngles(Angle(0,0,0))
-		ply.Flag:SetNW2Entity("Attached", NULL)
+		DropFlag(ply.Flag)
 	end
 end
 hook.Add("PlayerDisconnected", "pk_dropfalgdisconnect", DropOnDisconnect)
