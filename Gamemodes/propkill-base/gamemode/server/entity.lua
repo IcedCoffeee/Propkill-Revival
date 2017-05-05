@@ -1,7 +1,6 @@
-function GM:PlayerSpawnedProp(ply, model, ent) 
+hook.Add("PlayerSpawnedProp", "pk_setpropowner", function(ply, model, ent) 
 	ent.Owner = ply
-end
-
+end)
 
 function GM:PhysgunPickup( ply, ent )
 	if ent.Owner == nil then
@@ -19,7 +18,8 @@ function GM:PlayerSpawnEffect(ply) Notify(ply, "You can only spawn props!") retu
 function GM:PlayerSpawnVehicle(ply) Notify(ply, "You can only spawn props!") return false end
 function GM:PlayerSpawnNPC(ply) Notify(ply, "You can only spawn props!") return false end 
 function GM:PlayerSpawnRagdoll(ply) Notify(ply, "You can only spawn props!") return false end
-function GM:PlayerSpawnProp(ply, model)
+
+hook.Add("PlayerSpawnProp", "pk_canspawnprop", function(ply, model)
 	if not ply:Alive() then
 		return false
 	end
@@ -35,7 +35,7 @@ function GM:PlayerSpawnProp(ply, model)
 		return false
 	end
 	return true
-end	
+end)
 
 function GM:InitPostEntity()
 	local physData = physenv.GetPerformanceSettings()
