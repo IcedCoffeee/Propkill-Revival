@@ -42,7 +42,6 @@ function CaptureCheck()
 	for k,v in pairs(flagpositions) do
 		for j,m in pairs(ents.FindInSphere(v, GAMEMODE.PickupRange)) do
 			if IsValid(m) and m:IsPlayer() and IsValid(m.Flag) and m.Flag:GetNW2Entity("Attached") == m and m.Flag:GetTeam() != k then
-				AllNotify(m:Nick() .. " has captured the " .. team.GetName(m.Flag:GetTeam()) .. " flag!") -- temporary
 				CaptureEffects(v, m)
 				ResetFlag(m.Flag)
 				team.AddScore(m:Team(), 1)

@@ -22,6 +22,7 @@ function ENT:Think()
 				self.Entity:SetPos(v:GetPos()+Vector(0,0,100))
 				self:SetNW2Entity("Attached", v)
 				v.Flag = self
+				self:EmitSound("buttons/latchunlocked2.wav")
 			end
 			if v:GetPos():Distance(self.Entity:GetPos()) < GAMEMODE.PickupRange and v:Team() == self:GetTeam() and v:Alive() then
 				ResetFlag(self.Entity)
