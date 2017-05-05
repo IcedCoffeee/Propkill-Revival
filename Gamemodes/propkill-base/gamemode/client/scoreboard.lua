@@ -152,7 +152,7 @@ function GM:ScoreboardShow()
 				
 				local playername = vgui.Create("DLabel", playerrow)
 				playername:SetText("")
-				playername:SetWidth(160)
+				playername:SetWidth(250)
 				playername:Dock(LEFT)
 				function playername:Paint(w,h)
 					draw.SimpleText(m:Nick(), "pk_teamfont", 20, h/2, Color(255,255,255), TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)

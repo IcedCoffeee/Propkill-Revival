@@ -3,6 +3,6 @@ GM.Author = "Iced Coffee & Almighty Laxz"
 GM.Email = "N/A"
 GM.Website = "N/A"
 
-GM.TeamBased = true
+GM.TeamBased = false
 
 DeriveGamemode("propkill-base")

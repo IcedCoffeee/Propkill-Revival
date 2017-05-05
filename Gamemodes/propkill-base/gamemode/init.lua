@@ -20,6 +20,7 @@ AddCSLuaFile("client/hax.lua")
 AddCSLuaFile("client/scrubkeys.lua")
 AddCSLuaFile("client/scoreboard.lua")
 AddCSLuaFile("client/derma.lua")
+AddCSLuaFile("client/base.lua")
 AddCSLuaFile("shared/entity.lua")
 
 /*------------------------------------------

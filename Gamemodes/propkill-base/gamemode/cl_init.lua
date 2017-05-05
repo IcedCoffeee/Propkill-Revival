@@ -4,6 +4,7 @@ include("client/hax.lua")
 include("client/scrubkeys.lua")
 include("client/scoreboard.lua")
 include("client/derma.lua")
+include("client/base.lua")
 include("shared/entity.lua")
 
 // Propkill optimized defaults

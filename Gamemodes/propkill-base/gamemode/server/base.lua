@@ -4,13 +4,7 @@ cgrey = Color(200,200,200)
 function ChatMsg(message)
 	net.Start("pk_chatmsg")
 		net.WriteTable(message)
-	net.Broadcast()
-end
-
-function ChatNotify(message)
-	net.Start("chatmsg")
-		net.WriteTable(msg)
-	net.Broadcast()
+	net.Broadcast() 
 end
 
 function NotifyAll(message)
