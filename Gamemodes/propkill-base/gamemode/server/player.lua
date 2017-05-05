@@ -109,7 +109,7 @@ function GM:PlayerDisconnected(ply)
 end 
 
 function GM:PlayerShouldTakeDamage(ply, attacker)
-	if ply:IsPlayer() and attacker:GetClass() == "worldspawn" then
+	if ply:IsPlayer() and attacker:GetClass() != "prop_physics" then
 		return false
 	end
 	if ply:Team() == TEAM_UNASSIGNED then

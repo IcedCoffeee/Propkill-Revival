@@ -38,6 +38,14 @@ function IsFlagHome(ent)
 	return false
 end
 
+function GetFlag(t)
+	for k,v in pairs(ents.GetAll()) do
+		if v:GetClass() == "ctf_flag" and v:GetTeam() == t then
+			return v
+		end
+	end
+end
+
 function CaptureEffects(pos, ply)
 	local ed = EffectData()
 	ed:SetOrigin(pos)
@@ -48,7 +56,7 @@ end
 function CaptureCheck()
 	for k,v in pairs(flagpositions) do
 		for j,m in pairs(ents.FindInSphere(v, GAMEMODE.PickupRange)) do
-			if IsValid(m) and m:IsPlayer() and IsValid(m.Flag) and m.Flag:GetNW2Entity("Attached") == m and m.Flag:GetTeam() != k then
+			if IsValid(m) and m:IsPlayer() and IsValid(m.Flag) and m.Flag:GetNW2Entity("Attached") == m and m.Flag:GetTeam() != k and IsFlagHome(GetFlag(m:Team())) then
 				CaptureEffects(v, m)
 				ResetFlag(m.Flag)
 				GameNotify(team.GetName(m:Team()) .. " has scored!")

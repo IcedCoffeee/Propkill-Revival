@@ -27,9 +27,9 @@ function ENT:Think()
 				TeamNotify(v:Team(), "Your team has the flag")
 			end
 			if v:GetPos():Distance(self.Entity:GetPos()) < GAMEMODE.PickupRange and v:Team() == self:GetTeam() and v:Alive() then
-				ResetFlag(self.Entity)
 				if not IsFlagHome(self.Entity) then
-					TeamNotify(self:GetTeam(), "Flag returned")
+					ResetFlag(self.Entity)
+					GameNotify(team.GetName(self:GetTeam()) .. " flag returned")
 				end
 			end
 		end
