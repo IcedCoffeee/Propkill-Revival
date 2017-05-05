@@ -112,15 +112,22 @@ function PKHUD()
 	--local duelscore = GetGlobalString("PK_DuelScore")
 	draw.RoundedBox(3, 5, ScrH() - 35, 300, 33, Color(24, 24, 24, 150))
 	draw.SimpleText("Leader: " .. leader, "stb24", 10, ScrH() - 30, Color(255, 255, 255, 200), 0, 0)
+	
 	if LocalPlayer():Team() == TEAM_UNASSIGNED and IsValid(LocalPlayer():GetObserverTarget()) then
 		draw.RoundedBox(3, ScrW() - 305, ScrH() - 35, 300, 33, Color(24, 24, 24, 150))
 		draw.SimpleText("Spectating: " .. tostring(LocalPlayer():GetObserverTarget():GetName()) , "stb24", ScrW() - 300, ScrH() - 30, Color(255, 255, 255, 200), 0, 0)
 	end
+
 	if LocalPlayer():Team() == TEAM_UNASSIGNED then
 		local coolmode = GetGlobalString("PK_CurrentMode")
 		draw.SimpleText(coolmode, "spec_font1", ScrW()/2, ScrH()/6, Color(255,255,255,200), TEXT_ALIGN_CENTER, TEXT_ALIGN_TOP)
 		draw.SimpleText("Click to cycle players, right click to follow, reload to first person spectate", "spec_font2", ScrW()/2, ScrH()/7+10, Color(255,255,255,200), TEXT_ALIGN_CENTER, TEXT_ALIGN_TOP)
 	end
+
+	if timer.Exists("hudmsg") then
+		draw.SimpleText(hudmsg, "spec_font1", ScrW()/2, ScrH()/6, Color(255,255,255,200), TEXT_ALIGN_CENTER, TEXT_ALIGN_TOP)
+	end
+
 	if GetGlobalBool("Warmup") then
 		draw.SimpleText("Warm Up", "spec_font1", ScrW()/2, ScrH()/4, Color(255,255,255,200), TEXT_ALIGN_CENTER, TEXT_ALIGN_TOP)
 	end

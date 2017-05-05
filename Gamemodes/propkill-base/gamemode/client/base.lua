@@ -8,6 +8,12 @@ net.Receive("pk_notify", function()
 	surface.PlaySound("buttons/button2.wav")
 end)
 
+net.Receive("pk_gamenotify", function()
+	hudmsg = net.ReadString()
+	local time = net.ReadInt(16)
+	timer.Create("hudmsg", time, 1, function() end)
+end)
+
 function KilledByProp()
 	local ply	   = net.ReadEntity()
 	local inflictor = net.ReadString()

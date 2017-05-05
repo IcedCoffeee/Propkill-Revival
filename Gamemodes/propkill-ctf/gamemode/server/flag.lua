@@ -31,6 +31,13 @@ end
 hook.Add("InitPostEntity", "pk_spawnflags", SpawnFlags)
 hook.Add("PostCleanupMap", "pk_spawnflags", SpawnFlags)
 
+function IsFlagHome(ent)
+	if ent:GetPos() == flagpositions[ent:GetTeam()] then
+		return true
+	end
+	return false
+end
+
 function CaptureEffects(pos, ply)
 	local ed = EffectData()
 	ed:SetOrigin(pos)
@@ -44,6 +51,7 @@ function CaptureCheck()
 			if IsValid(m) and m:IsPlayer() and IsValid(m.Flag) and m.Flag:GetNW2Entity("Attached") == m and m.Flag:GetTeam() != k then
 				CaptureEffects(v, m)
 				ResetFlag(m.Flag)
+				GameNotify(team.GetName(m:Team()) .. " has scored!")
 				team.AddScore(m:Team(), 1)
 			end
 		end

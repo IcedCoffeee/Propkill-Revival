@@ -15,6 +15,24 @@ function NotifyAll(message)
 	end
 end
 
+function GameNotify(message, time)
+	if time == nil then time = 3 end
+	net.Start("pk_gamenotify")
+		net.WriteString(message)
+		net.WriteInt(time, 16)
+	net.Broadcast()
+end
+
+function TeamNotify(t, message, time)
+	if time == nil then time = 3 end
+	for k,v in pairs(team.GetPlayers(t)) do
+		net.Start("pk_gamenotify")
+			net.WriteString(message)
+			net.WriteInt(time, 16)
+		net.Send(v)
+	end
+end
+
 function LogPrint(message)
 	MsgC(cwhite, "[Propkill]: ", cgrey, message .. "\n")
 end

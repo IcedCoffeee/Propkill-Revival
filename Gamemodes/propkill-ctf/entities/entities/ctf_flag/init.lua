@@ -23,15 +23,22 @@ function ENT:Think()
 				self:SetNW2Entity("Attached", v)
 				v.Flag = self
 				self:EmitSound("buttons/latchunlocked2.wav")
+				TeamNotify(self:GetTeam(), "Enemy team has your flag")
+				TeamNotify(v:Team(), "Your team has the flag")
 			end
 			if v:GetPos():Distance(self.Entity:GetPos()) < GAMEMODE.PickupRange and v:Team() == self:GetTeam() and v:Alive() then
 				ResetFlag(self.Entity)
+				if not IsFlagHome(self.Entity) then
+					TeamNotify(self:GetTeam(), "Flag returned")
+				end
 			end
 		end
 	else
 		if not attached:Alive() then
 			DropFlag(self.Entity)
 			attached.Flag = NULL
+			TeamNotify(self:GetTeam(), "Your flag has been dropped")
+			TeamNotify(attached:Team(), "Enemy flag dropped")
 		end
 	end
 	self:NextThink(CurTime()+0.05)
