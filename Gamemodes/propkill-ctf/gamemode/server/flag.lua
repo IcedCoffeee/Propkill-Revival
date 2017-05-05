@@ -57,4 +57,4 @@ function DropOnDisconnect(ply)
 		DropFlag(ply.Flag)
 	end
 end
-hook.Add("PlayerDisconnected", "pk_dropfalgdisconnect", DropOnDisconnect)
+hook.Add("PlayerDisconnected", "pk_dropflagdisconnect", DropOnDisconnect)
