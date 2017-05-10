@@ -15,6 +15,7 @@ end
 
 function ENT:Think()
 	local attached = self:GetNW2Entity("Attached")
+
 	if not IsValid(attached) and not IsValid(attached.Flag) then
 		for k,v in pairs(player.GetAll()) do
 			if v:GetPos():Distance(self.Entity:GetPos()) < GAMEMODE.PickupRange and v:Team() != self:GetTeam() and v:Alive() and v:Team() != TEAM_UNASSIGNED then
@@ -41,6 +42,11 @@ function ENT:Think()
 			TeamNotify(attached:Team(), "Enemy flag dropped")
 		end
 	end
+
+	if self:GetPos() == Vector(0,0,0) then
+		ResetFlag(self.Entity)
+	end
+
 	self:NextThink(CurTime()+0.05)
 	return true
 end

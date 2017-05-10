@@ -1,11 +1,11 @@
-local flagpositions = {Vector(-1919.098267, -1552.186890, 128.031250), Vector(5279.498535, 1432.232056, 128.031250)}
+local flagpositions = {["pk_downtown_tdm_v1b"] = {Vector(-1919.098267, -1552.186890, 128.031250), Vector(5279.498535, 1432.232056, 128.031250)}}
 GM.PickupRange = 150
 
 function ResetFlag(ent)
 	ent:SetParent(nil)
 	ent:SetAngles(Angle(0,0,0))
 	ent:SetNW2Entity("Attached", NULL)
-	ent:SetPos(flagpositions[ent:GetTeam()])
+	ent:SetPos(flagpositions[game.GetMap()][ent:GetTeam()])
 end
 
 function DropFlag(ent)
@@ -21,7 +21,7 @@ function SpawnFlags()
 			v:Remove()
 		end
 	end
-	for k,v in pairs(flagpositions) do
+	for k,v in pairs(flagpositions[game.GetMap()]) do
 		local flag = ents.Create("ctf_flag")
 		flag:SetPos(v)
 		flag:Spawn()
@@ -32,7 +32,7 @@ hook.Add("InitPostEntity", "pk_spawnflags", SpawnFlags)
 hook.Add("PostCleanupMap", "pk_spawnflags", SpawnFlags)
 
 function IsFlagHome(ent)
-	if ent:GetPos() == flagpositions[ent:GetTeam()] then
+	if ent:GetPos() == flagpositions[game.GetMap()][ent:GetTeam()] then
 		return true
 	end
 	return false
@@ -54,7 +54,7 @@ function CaptureEffects(pos, ply)
 end
 
 function CaptureCheck()
-	for k,v in pairs(flagpositions) do
+	for k,v in pairs(flagpositions[game.GetMap()]) do
 		for j,m in pairs(ents.FindInSphere(v, GAMEMODE.PickupRange)) do
 			if IsValid(m) and m:IsPlayer() and IsValid(m.Flag) and m.Flag:GetNW2Entity("Attached") == m and m.Flag:GetTeam() != k and IsFlagHome(GetFlag(m:Team())) then
 				CaptureEffects(v, m)

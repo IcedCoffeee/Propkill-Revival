@@ -11,6 +11,7 @@ include("server/player.lua")
 include("server/entity.lua")
 include("server/commands.lua")
 include("server/base.lua")
+include("server/rounds.lua")
 include("shared/entity.lua")
 
 AddCSLuaFile("cl_init.lua")
@@ -39,6 +40,7 @@ function GM:Initialize()
 	LogPrint("Initializing...")
 	SetGlobalString("PK_CurrentMode", "Deathmatch")
 	SetGlobalString("PK_CurrentLeader", "Nobody")
+	SetGlobalString("PK_RoundStatus", "Warmup")
 	firstblood = 1
 end
 

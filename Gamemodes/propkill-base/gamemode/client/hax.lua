@@ -18,7 +18,7 @@ local ms_settings_table = {
 	PlayerOpacity=100,
 	PlayerColour={1,1,1},
 	PropOpacity=30,
-	PropNormalColour={1,1,0},
+	PropNormalColour={0.525,0,1},
 	PropWallOpacity=60
 }
 

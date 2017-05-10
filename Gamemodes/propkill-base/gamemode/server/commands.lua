@@ -1,9 +1,7 @@
 function ChangeTeam(ply, cmd, args)
 	local teamindex = tonumber(args[1])
 	if teamindex < 1000 and team.Valid(teamindex) then
-		ChatMsg({team.GetColor(ply:Team()), ply:Nick(), cwhite, " has joined team ", team.GetColor(teamindex), team.GetName(teamindex), "!"})
-		ply:SetTeam(teamindex)
-		ply:Spawn()
+		GAMEMODE:PlayerJoinTeam(ply, teamindex)
 	end
 end
 concommand.Add("pk_team", ChangeTeam)

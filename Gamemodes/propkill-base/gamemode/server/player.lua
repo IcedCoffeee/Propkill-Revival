@@ -23,22 +23,16 @@ function GetLeader()
 	end
 end
 
-function GM:PlayerSpawn(ply)
-
-	if (ply:Team() == TEAM_UNASSIGNED) then
+hook.Add("PlayerSpawn", "pk_playerspawn", function(ply)
+	if ply:Team() == TEAM_UNASSIGNED then
 		ply:StripWeapons()
 		ply:Spectate(OBS_MODE_ROAMING)
-		return true
+		return
 	else
 		ply:UnSpectate()
 	end
 
 	ply.temp = 0
-	ply:SetHealth(1)
-	ply:SetWalkSpeed(400)
-	ply:SetRunSpeed(400)
-	ply:SetJumpPower(200)
-	ply:Give("weapon_physgun")
 	ply:SetModel("models/player/alyx.mdl")
 
 	local col = ply:GetInfo("cl_playercolor")
@@ -46,6 +40,20 @@ function GM:PlayerSpawn(ply)
 
 	local col = ply:GetInfo("cl_weaponcolor")
 	ply:SetWeaponColor(Vector(col))
+end)
+
+function GM:PlayerLoadout(ply)
+	ply:SetHealth(1)
+	ply:SetWalkSpeed(400)
+	ply:SetRunSpeed(400)
+	ply:SetJumpPower(200)
+	ply:Give("weapon_physgun")
+	return true
+end
+
+function GM:OnPlayerChangedTeam(ply, old, new)
+	ChatMsg({team.GetColor(old), ply:Nick(), cwhite, " has joined team ", team.GetColor(new), team.GetName(new), "!"})
+	ply.NextSpawnTime = CurTime()
 end
 
 function GM:PlayerDeath(ply, inflictor, attacker)
@@ -67,11 +75,12 @@ function GM:PlayerDeath(ply, inflictor, attacker)
 		end
 	end
 	ply.temp = 0
-	ply.NextSpawnTime = CurTime() + 1
+	ply.NextSpawnTime = CurTime() + 2
+	print("ded")
 	net.Start("KilledByProp")
-	net.WriteEntity(ply)
-	net.WriteString(inflictor:GetClass())
-	net.WriteEntity(attacker)
+		net.WriteEntity(ply)
+		net.WriteString(inflictor:GetClass())
+		net.WriteEntity(attacker)
 	net.Broadcast()
 	
 	GetLeader()
@@ -121,6 +130,11 @@ function GM:PlayerShouldTakeDamage(ply, attacker)
 		return true
 	end
 	return true
+end
+
+function GM:EntityTakeDamage(target, dmg)
+	if not target:IsPlayer() then return end
+	dmg:ScaleDamage(9999999)
 end
 
 function GM:PlayerDeathSound()
