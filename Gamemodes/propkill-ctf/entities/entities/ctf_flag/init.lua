@@ -34,6 +34,9 @@ function ENT:Think()
 				end
 			end
 		end
+		if not util.IsInWorld(self.Entity:GetPos()) then
+			ResetFlag(self.Entity)
+		end
 	else
 		if not attached:Alive() then
 			DropFlag(self.Entity)

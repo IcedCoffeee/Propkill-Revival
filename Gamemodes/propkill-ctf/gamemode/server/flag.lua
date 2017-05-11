@@ -11,7 +11,7 @@ end
 function DropFlag(ent)
 	ent:SetParent(nil)
 	ent:SetAngles(Angle(0,0,0))
-	ent:SetPos(ent:GetPos()-Vector(0,0,40))
+	ent:SetPos(ent:GetPos()-Vector(0,0,48))
 	ent:SetNW2Entity("Attached", NULL)
 end
 

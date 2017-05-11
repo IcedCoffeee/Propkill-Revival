@@ -60,13 +60,10 @@ function GM:PlayerDeath(ply, inflictor, attacker)
 	if (inflictor:GetClass() == "prop_physics") then 
 		local propOwner = inflictor.Owner
 		attacker = propOwner
-		
+
 		if (propOwner != ply) then
 			attacker:AddFrags(1)
 			MsgAll(attacker:Nick() .. " killed " .. ply:Nick() .. "!")
-			if attacker:Team() != TEAM_UNASSIGNED then
-				team.AddScore(attacker:Team(), 1)
-			end
 			attacker.temp = attacker.temp + 1
 			attacker:SendLua("surface.PlaySound(\"/buttons/lightswitch2.wav\")")
 			handlestreak(attacker)
@@ -74,9 +71,10 @@ function GM:PlayerDeath(ply, inflictor, attacker)
 			MsgAll(attacker:Nick() .. " propkilled himself!")
 		end
 	end
+
 	ply.temp = 0
 	ply.NextSpawnTime = CurTime() + 2
-	print("ded")
+
 	net.Start("KilledByProp")
 		net.WriteEntity(ply)
 		net.WriteString(inflictor:GetClass())
