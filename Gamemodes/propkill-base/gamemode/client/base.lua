@@ -19,6 +19,8 @@ function KilledByProp()
 	local inflictor = net.ReadString()
 	local attacker  = net.ReadEntity()
 
+	if !attacker:IsPlayer() then return false end
+
 	GAMEMODE:AddDeathNotice(attacker:Name(), attacker:Team(), inflictor, ply:Name(), ply:Team())
 end
 

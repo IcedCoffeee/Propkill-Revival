@@ -118,6 +118,10 @@ function GM:PlayerDisconnected(ply)
 end 
 
 function GM:PlayerShouldTakeDamage(ply, attacker)
+	if attacker:GetClass() == "trigger_hurt" then
+		return true
+	end
+
 	if ply:IsPlayer() and attacker:GetClass() != "prop_physics" then
 		return false
 	end
