@@ -19,7 +19,8 @@ local ms_settings_table = {
 	PlayerColour={1,1,1},
 	PropOpacity=30,
 	PropNormalColour={0.525,0,1},
-	PropWallOpacity=60
+	PropWallOpacity=60,
+	VertBeam = false
 }
 
 function ENTITY:IsProp()
@@ -191,3 +192,30 @@ local function msrotate2()
 	timer.Simple(0.2, function() ply:ConCommand("-jump") end)
 end
 concommand.Add("ms_rotate2", msrotate2)
+
+local function vertBeam()
+	if !ms_settings_table.VertBeam then
+		hook.Add("PostPlayerDraw", "pk_vertbeam", function()
+			for k,v in pairs(player.GetAll()) do
+				if v != LocalPlayer() then
+					local t = {start = v:GetPos(), endpos = v:GetPos()+Vector(0,0,10000), filter = {v}, mask = MASK_SHOT}
+					local t2 = {start = v:GetPos(), endpos = v:GetPos()+Vector(0,0,-10000), filter = {v}, mask = MASK_SHOT}
+					local traceup = util.TraceLine(t)
+					local tracedown = util.TraceLine(t2)
+
+					render.SetMaterial(Material("sprites/tp_beam001"))
+					
+					local centre = v:LocalToWorld(v:OBBCenter())
+
+					render.DrawBeam(centre, traceup.HitPos, 10, 0, 0, team.GetColor(v:Team()))
+					render.DrawBeam(centre, tracedown.HitPos, 10, 0, 0, team.GetColor(v:Team()))
+				end
+			end
+		end)
+		ms_settings_table.VertBeam = !ms_settings_table.VertBeam
+	else
+		hook.Remove("PostPlayerDraw", "pk_vertbeam")
+		ms_settings_table.VertBeam = !ms_settings_table.VertBeam
+	end
+end
+concommand.Add("pk_vertbeam", vertBeam)
