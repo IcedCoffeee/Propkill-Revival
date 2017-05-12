@@ -1,4 +1,7 @@
-local flagpositions = {["pk_downtown_tdm_v1b"] = {Vector(-1919.098267, -1552.186890, 128.031250), Vector(5279.498535, 1432.232056, 128.031250)}}
+local flagpositions = {
+	["pk_downtown_tdm_v1b"] = {Vector(-1919.098267, -1552.186890, 128.031250), Vector(5279.498535, 1432.232056, 128.031250)},
+	["pk_downtown_tdm_v1c"] = {Vector(-1919.098267, -1552.186890, 128.031250), Vector(8438.874023, 1431.872559, 128.031250)}
+}
 GM.PickupRange = 150
 
 function ResetFlag(ent)
