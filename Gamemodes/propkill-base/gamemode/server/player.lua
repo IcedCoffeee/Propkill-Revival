@@ -3,8 +3,8 @@ function GM:PlayerInitialSpawn(ply)
 	ply.temp = 0
 	if ply:IsBot() then
 		ply:SetTeam(math.random(1,2))
-		ply:Spawn()
 	end
+	ply:Spawn()
 end
 
 function GetLeader()
@@ -23,7 +23,7 @@ function GetLeader()
 	end
 end
 
-hook.Add("PlayerSpawn", "pk_playerspawn", function(ply)
+function GM:PlayerSpawn(ply)
 	if ply:Team() == TEAM_UNASSIGNED then
 		ply:StripWeapons()
 		ply:Spectate(OBS_MODE_ROAMING)
@@ -40,15 +40,12 @@ hook.Add("PlayerSpawn", "pk_playerspawn", function(ply)
 
 	local col = ply:GetInfo("cl_weaponcolor")
 	ply:SetWeaponColor(Vector(col))
-end)
 
-function GM:PlayerLoadout(ply)
 	ply:SetHealth(1)
 	ply:SetWalkSpeed(400)
 	ply:SetRunSpeed(400)
 	ply:SetJumpPower(200)
 	ply:Give("weapon_physgun")
-	return true
 end
 
 function GM:OnPlayerChangedTeam(ply, old, new)

@@ -33,3 +33,8 @@ hook.Add("Initialize", "PK_InitializeStreakSounds2", function()
 		end
 	end
 end)
+
+--remove bhop clamp
+local base = baseclass.Get('player_sandbox')
+base['FinishMove'] = function() end
+baseclass.Set('player_sandbox', base)
