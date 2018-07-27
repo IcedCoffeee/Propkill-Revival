@@ -49,3 +49,6 @@ timer.Create("PK_Clear_Decals", 30, 0, function()
 		v:ConCommand("r_cleardecals")
 	end
 end)
+
+RunConsoleCommand("sbox_noclip", "0")
+RunConsoleCommand("sbox_maxprops", "7")
