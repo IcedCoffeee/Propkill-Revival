@@ -9,7 +9,7 @@ concommand.Add("pk_team", ChangeTeam)
 concommand.Add("rserver", function(ply)
 	if ply:IsSuperAdmin() then
 		print("Restarting server...")
-		RunConsoleCommand("changelevel", game.GetMap(), "propkill")
+		RunConsoleCommand("changelevel", game.GetMap(), engine.ActiveGamemode())
 	end
 end)
 
