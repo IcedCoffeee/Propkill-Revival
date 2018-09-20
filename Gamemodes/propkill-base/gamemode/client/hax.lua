@@ -8,22 +8,36 @@ local g = CreateMaterial("WallMaterial3", "VertexLitGeneric", {["$basetexture"] 
 local h = {}
 local ENTITY = FindMetaTable("Entity")
 
-local ms_settings_table = {
-	PlayerWalls=true,
-	PropWalls=true,
-	WallsAlwaysSolid=true,
-	ESP=true,
-	ESPOffset=Vector(0,0,15),
-	Boxes=false,
-	PlayerOpacity=100,
-	PlayerColour={1,1,1},
-	PropOpacity=30,
-	PropNormalColour={0.525,0,1},
-	PropWallOpacity=60,
-	VertBeam = false,
-	RoofTiles = false,
-	RemoveSkybox = false
-}
+function pk_save_client_settings()
+	file.Write("pkr_settings.txt", util.TableToJSON(pk_ms_settings_table))
+end
+
+pk_settings_file = file.Read("pkr_settings.txt")
+
+pk_ms_settings_table = nil
+
+if pk_settings_file then
+	pk_ms_settings_table = util.JSONToTable(pk_settings_file)
+else
+	pk_ms_settings_table = {
+		PlayerWalls=true,
+		PropWalls=true,
+		WallsAlwaysSolid=true,
+		ESP=true,
+		ESPOffset=Vector(0,0,15),
+		Boxes=false,
+		PlayerOpacity=100,
+		PlayerColour={1,1,1},
+		PropOpacity=30,
+		PropNormalColour={0.525,0,1},
+		PropWallOpacity=60,
+		VertBeam = false,
+		RoofTiles = false,
+		RemoveSkybox = false,
+		NoLerp = false,
+	}
+	pk_save_client_settings()
+end
 
 function ENTITY:IsProp()
 	return self:GetClass()=="prop_physics" or self:GetClass()=="gmod_button"
@@ -46,7 +60,7 @@ hook.Add("Think", "addbuttons", w)
 
 local function ms_onentcreated(entname)
 	local y = entname
-	if ms_settings_table.PropWalls then 
+	if pk_ms_settings_table.PropWalls then 
 		if not y.Mat and y:GetClass()=="prop_physics" or y:GetClass()=="gmod_button" then 
 			y.Mat=y:GetMaterial()
 			y:SetNoDraw(true)
@@ -74,13 +88,13 @@ local function B(C)
 end
 
 local function ms_prop_screenspace_stuff()
-	local E=ms_settings_table.PropNormalColour
+	local E=pk_ms_settings_table.PropNormalColour
 	cam.Start3D(EyePos(),EyeAngles())
 	cam.IgnoreZ(true)
 	render.MaterialOverride(g)
 	render.SuppressEngineLighting(true)
-	if ms_settings_table.PropWalls and ms_settings_table.PropWallOpacity then 
-		render.SetBlend(ms_settings_table.PropWallOpacity/100)
+	if pk_ms_settings_table.PropWalls and pk_ms_settings_table.PropWallOpacity then 
+		render.SetBlend(pk_ms_settings_table.PropWallOpacity/100)
 		for l,m in pairs(h) do
 			if IsValid(m) then 
 				if m:GetClass() == "ctf_flag" then
@@ -95,8 +109,8 @@ local function ms_prop_screenspace_stuff()
 		end 
 	end
 	
-	if ms_settings_table.PlayerWalls and ms_settings_table.PlayerOpacity then 
-		render.SetBlend(ms_settings_table.PlayerOpacity/100)
+	if pk_ms_settings_table.PlayerWalls and pk_ms_settings_table.PlayerOpacity then 
+		render.SetBlend(pk_ms_settings_table.PlayerOpacity/100)
 		for l,m in pairs(player.GetAll()) do
 			if m:Team() == TEAM_UNASSIGNED then continue end
 			local tc = team.GetColor(m:Team())
@@ -109,8 +123,8 @@ local function ms_prop_screenspace_stuff()
 
 	cam.IgnoreZ(false)
 
-	if not ms_settings_table.WallsAlwaysSolid then 
-		if ms_settings_table.PlayerWalls then 
+	if not pk_ms_settings_table.WallsAlwaysSolid then 
+		if pk_ms_settings_table.PlayerWalls then 
 			render.SetBlend(1)
 			render.SetColorModulation(1,1,1)
 			render.MaterialOverride(nil)
@@ -121,10 +135,10 @@ local function ms_prop_screenspace_stuff()
 			end 
 		end
 	
-		if ms_settings_table.PropWalls and ms_settings_table.PropOpacity then 
+		if pk_ms_settings_table.PropWalls and pk_ms_settings_table.PropOpacity then 
 			render.MaterialOverride(g)
 			render.SetColorModulation(E[1],E[2],E[3])
-			render.SetBlend(ms_settings_table.PropOpacity/100)
+			render.SetBlend(pk_ms_settings_table.PropOpacity/100)
 			for l,m in pairs(h) do 
 				if IsValid(m) then 
 					m:SetNoDraw(true)
@@ -145,22 +159,23 @@ end
 hook.Add("RenderScreenspaceEffects", "MSRender", ms_prop_screenspace_stuff)
 
 local function visualstoggle()
-	if !ms_settings_table.PropWalls then
+	if !pk_ms_settings_table.PropWalls then
 		surface.PlaySound("buttons/button1.wav")
 	else 
 		surface.PlaySound("buttons/button19.wav")
 	end
-	ms_settings_table.PropWalls = not ms_settings_table.PropWalls
-	ms_settings_table.PlayerWalls = not ms_settings_table.PlayerWalls
-	ms_settings_table.ESP = not ms_settings_table.ESP
+	pk_ms_settings_table.PropWalls = not pk_ms_settings_table.PropWalls
+	pk_ms_settings_table.PlayerWalls = not pk_ms_settings_table.PlayerWalls
+	pk_ms_settings_table.ESP = not pk_ms_settings_table.ESP
+	pk_save_client_settings()
 end
 
 concommand.Add("pk_visuals", visualstoggle)
 
 function pk_esp()
 	for k,v in pairs(player.GetAll()) do
-		if v != LocalPlayer() and ms_settings_table.ESP and v:Alive() and v:Team() != TEAM_UNASSIGNED then
-			local pos1 = v:GetBonePosition(v:LookupBone("ValveBiped.Bip01_Head1") or -1) + ms_settings_table.ESPOffset or v:GetPos()+Vector(0,0,80)
+		if v != LocalPlayer() and pk_ms_settings_table.ESP and v:Alive() and v:Team() != TEAM_UNASSIGNED then
+			local pos1 = v:GetBonePosition(v:LookupBone("ValveBiped.Bip01_Head1") or -1) + pk_ms_settings_table.ESPOffset or v:GetPos()+Vector(0,0,80)
 			local pos = pos1:ToScreen()
 			draw.SimpleText(v:Nick(), "stb24", pos.x, pos.y, Color(255,255,255), TEXT_ALIGN_CENTER, TEXT_ALIGN_BOTTOM)
 
@@ -196,7 +211,7 @@ end
 concommand.Add("ms_rotate2", msrotate2)
 
 local function vertBeam()
-	if !ms_settings_table.VertBeam then
+	if !pk_ms_settings_table.VertBeam then
 		hook.Add("PostPlayerDraw", "pk_vertbeam", function()
 			for k,v in pairs(player.GetAll()) do
 				if v != LocalPlayer() then
@@ -214,11 +229,12 @@ local function vertBeam()
 				end
 			end
 		end)
-		ms_settings_table.VertBeam = !ms_settings_table.VertBeam
+		pk_ms_settings_table.VertBeam = !pk_ms_settings_table.VertBeam
 	else
 		hook.Remove("PostPlayerDraw", "pk_vertbeam")
-		ms_settings_table.VertBeam = !ms_settings_table.VertBeam
+		pk_ms_settings_table.VertBeam = !pk_ms_settings_table.VertBeam
 	end
+	pk_save_client_settings()
 end
 concommand.Add("pk_vertbeam", vertBeam)
 
@@ -251,7 +267,7 @@ timer.Create("DrawRoofTiles", 0.1, 0, function()
 end)
 
 local function roofTiles()
-	if !ms_settings_table.RoofTiles then
+	if !pk_ms_settings_table.RoofTiles then
 		hook.Add("PostDrawOpaqueRenderables", "ReplaceSkyBox", function()
 			if not DrawPos then return end
 			local pos1 = DrawPos + Vector( 5000,  5000, 0)
@@ -279,16 +295,17 @@ local function roofTiles()
 				render.SetBlend(1)
 			cam.End3D()
 		end)
-		ms_settings_table.RoofTiles = !ms_settings_table.RoofTiles
+		pk_ms_settings_table.RoofTiles = !pk_ms_settings_table.RoofTiles
 	else
 		hook.Remove("PostDrawOpaqueRenderables", "ReplaceSkyBox")
-		ms_settings_table.RoofTiles = !ms_settings_table.RoofTiles
+		pk_ms_settings_table.RoofTiles = !pk_ms_settings_table.RoofTiles
 	end
+	pk_save_client_settings()
 end
 concommand.Add("pk_rooftiles", roofTiles)
 
 local function removeSkybox()
-	if !ms_settings_table.RemoveSkybox then
+	if !pk_ms_settings_table.RemoveSkybox then
 		hook.Add("PostDrawSkyBox", "removeSkybox", function()
 			render.Clear(50, 50, 50, 255)
 			return true
@@ -297,11 +314,42 @@ local function removeSkybox()
 			render.Clear(50, 50, 50, 255)
 			return true
 		end)
-		ms_settings_table.RemoveSkybox = !ms_settings_table.RemoveSkybox
+		pk_ms_settings_table.RemoveSkybox = !pk_ms_settings_table.RemoveSkybox
 	else
 		hook.Remove("PostDrawSkyBox", "removeSkybox")
 		hook.Remove("PostDraw2DSkyBox", "removeSkybox")
-		ms_settings_table.RemoveSkybox = !ms_settings_table.RemoveSkybox
+		pk_ms_settings_table.RemoveSkybox = !pk_ms_settings_table.RemoveSkybox
 	end
+	pk_save_client_settings()
 end
 concommand.Add("pk_removeskybox", removeSkybox)
+
+function UseLerpCommand(ply, cmd, args)
+	if IsValid(args[1]) then
+		if tonumber(args[1]) == 1 then
+			RunConsoleCommand("cl_updaterate", "1000")
+			RunConsoleCommand("cl_interp", "0")
+			RunConsoleCommand("rate", "1048576")
+			pk_ms_settings_table.NoLerp = true
+		elseif tonumber(args[1]) < 1 then
+			RunConsoleCommand("cl_updaterate", "30")
+			RunConsoleCommand("cl_interp", "0.1")
+			RunConsoleCommand("rate", "30000")
+			pk_ms_settings_table.NoLerp = false
+		end
+	else
+		if !pk_ms_settings_table.NoLerp then
+			RunConsoleCommand("cl_updaterate", "1000")
+			RunConsoleCommand("cl_interp", "0")
+			RunConsoleCommand("rate", "1048576")
+			pk_ms_settings_table.NoLerp = true
+		else
+			RunConsoleCommand("cl_updaterate", "30")
+			RunConsoleCommand("cl_interp", "0.1")
+			RunConsoleCommand("rate", "30000")
+			pk_ms_settings_table.NoLerp = false
+		end
+	end
+	pk_save_client_settings()
+end
+concommand.Add("pk_cl_physics", UseLerpCommand)
