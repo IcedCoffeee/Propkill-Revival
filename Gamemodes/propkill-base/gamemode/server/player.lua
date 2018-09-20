@@ -43,12 +43,12 @@ hook.Add("PlayerSpawn", "PK_PlayerSpawn", function(ply)
 	ply:SetWalkSpeed(400)
 	ply:SetRunSpeed(400)
 	ply:SetJumpPower(200)
-end
+end)
 
 hook.Add("PlayerLoadout", "PK_PlayerSpawn", function(ply)
 	ply:SetHealth(1)
 	ply:Give("weapon_physgun")
-end
+end)
 
 function GM:OnPlayerChangedTeam(ply, old, new)
 	ChatMsg({team.GetColor(old), ply:Nick(), cwhite, " has joined team ", team.GetColor(new), team.GetName(new), "!"})
