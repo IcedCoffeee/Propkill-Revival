@@ -54,3 +54,11 @@ end)
 
 RunConsoleCommand("sbox_noclip", "0")
 RunConsoleCommand("sbox_maxprops", "7")
+
+
+-- Show notification when lua is updated live
+if pk_gminitialized and !timer.Exists("PK_UpdateAntiSpam") then
+	ChatMsg({Color(0,200,0), "[SSS]: ", Color(200,200,200), "Gamemode was updated!"})
+	timer.Create("PK_UpdateAntiSpam", 4, 1, function() end) -- stop spam as each server file is live updated
+end
+pk_gminitialized = true
