@@ -117,18 +117,30 @@ local function RealTeams()
 end
 
 net.Receive("pk_teamselect", function()
-	local menu = vgui.Create("DFrame")
-	menu:SetTitle("")
-	menu:SetSize(ScrW()/2.5, ScrH())
-	menu:AlignRight()
-	menu:SetDraggable(false)
-	menu:ShowCloseButton(false)
-	function menu:Paint(w, h)
+	pk_cancloseteamselect = false
+	hook.Add("Think", "pk_checkf2key", function()
+		if !input.IsKeyDown(KEY_F2) then
+			pk_cancloseteamselect = true
+		end
+   		if input.IsKeyDown(KEY_F2) and pk_cancloseteamselect then
+   			if IsValid(pk_teamselectmenu) then
+   				pk_teamselectmenu:Remove()
+   			end
+   			hook.Remove("Think", "pk_checkf2key")
+   		end
+	end)
+	pk_teamselectmenu = vgui.Create("DFrame")
+	pk_teamselectmenu:SetTitle("")
+	pk_teamselectmenu:SetSize(ScrW()/2.5, ScrH())
+	pk_teamselectmenu:AlignRight()
+	pk_teamselectmenu:SetDraggable(false)
+	pk_teamselectmenu:ShowCloseButton(false)
+	function pk_teamselectmenu:Paint(w, h)
 		draw.RoundedBox(0, 0, 0, w, h, Color(40, 40, 40, 150))
 	end
-	menu:MakePopup()
+	pk_teamselectmenu:MakePopup()
 
-	local panel = vgui.Create("DPanel", menu)
+	local panel = vgui.Create("DPanel", pk_teamselectmenu)
 	panel:SetSize(ScrW()/2.5, 150 * RealTeams())
 	panel:Center()
 
@@ -151,7 +163,7 @@ net.Receive("pk_teamselect", function()
 
 		function btn:DoClick()
 			RunConsoleCommand("pk_team", tostring(k))
-			menu:SetVisible(false)
+			pk_teamselectmenu:Remove()
 		end
 		function btn:Paint(w, h)
 			draw.RoundedBox(0, 0, 0, w, h, team.GetColor(k))
@@ -159,3 +171,72 @@ net.Receive("pk_teamselect", function()
 	end
 	panel:Center()
 end)
+
+/*------------------------------------------
+				F4 PK Settings
+------------------------------------------*/
+
+function PKSettings()
+	local helpframe = vgui.Create("DFrame")
+	helpframe:SetSize(ScrW() - 500, ScrH() - 400)
+	helpframe:Center()
+	helpframe:ShowCloseButton(true)
+	helpframe:SetDraggable(false)
+	helpframe:SetTitle("Propkill Settings")
+	function helpframe:Paint(w, h)
+		draw.RoundedBox(0, 0, 0, w, h, Color(40, 40, 40, 170))
+	end
+	helpframe:MakePopup()
+
+	local scrollpanel = vgui.Create("DScrollPanel", helpframe)
+	scrollpanel:SetSize(ScrW() - 190, ScrH() - 135)
+	scrollpanel:SetPos(0, 25)
+	function scrollpanel:Paint(w, h)
+		draw.RoundedBox(0, 0, 0, w, h, Color(70, 70, 70, 170))
+	end
+
+	local physics_checkbox = vgui.Create("DCheckBoxLabel")
+	physics_checkbox:SetParent(scrollpanel)
+	physics_checkbox:SetPos(25, 50)			
+	physics_checkbox:SetText("Use lerp command (more responsive props)")		
+	physics_checkbox:SetConVar("pk_cl_physics")
+	physics_checkbox:SetValue(1)
+	physics_checkbox:SizeToContents()
+
+	local visuals_checkbox = vgui.Create("DCheckBoxLabel")
+	visuals_checkbox:SetParent(scrollpanel)
+	visuals_checkbox:SetPos(25, 75)
+	visuals_checkbox:SetText("Enable built-in wallhack and ESP")		
+	visuals_checkbox:SetConVar("pk_visuals")
+	visuals_checkbox:SetValue(1)
+	visuals_checkbox:SizeToContents()
+
+	local visuals_checkbox = vgui.Create("DCheckBoxLabel")
+	visuals_checkbox:SetParent(scrollpanel)
+	visuals_checkbox:SetPos(25, 100)	
+	visuals_checkbox:Toggle()
+	visuals_checkbox:SetText("Enable rooftiles in skybox")		
+	visuals_checkbox:SetConVar("pk_rooftiles")
+	visuals_checkbox:SetValue(false)
+	visuals_checkbox:SizeToContents()
+
+	local removeskybox_checkbox = vgui.Create("DCheckBoxLabel")
+	removeskybox_checkbox:SetParent(scrollpanel)
+	removeskybox_checkbox:SetPos(25, 125)
+	removeskybox_checkbox:Toggle()
+	removeskybox_checkbox:SetText("Replace skybox with grey")		
+	removeskybox_checkbox:SetConVar("pk_removeskybox")
+	removeskybox_checkbox:SetValue(false)
+	removeskybox_checkbox:SizeToContents()
+
+	local vertbeam_checkbox = vgui.Create("DCheckBoxLabel")
+	vertbeam_checkbox:SetParent(scrollpanel)
+	vertbeam_checkbox:SetPos(25, 150)
+	vertbeam_checkbox:Toggle()
+	vertbeam_checkbox:SetText("Vertical beam on players")		
+	vertbeam_checkbox:SetConVar("pk_vertbeam")
+	vertbeam_checkbox:SetValue(false)
+	vertbeam_checkbox:SizeToContents()
+end
+
+net.Receive("pk_settingsmenu", PKSettings)

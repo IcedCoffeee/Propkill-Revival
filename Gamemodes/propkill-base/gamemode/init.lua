@@ -22,6 +22,7 @@ AddCSLuaFile("client/scrubkeys.lua")
 AddCSLuaFile("client/scoreboard.lua")
 AddCSLuaFile("client/derma.lua")
 AddCSLuaFile("client/base.lua")
+AddCSLuaFile("client/commands.lua")
 AddCSLuaFile("shared/entity.lua")
 
 /*------------------------------------------
@@ -33,6 +34,7 @@ util.AddNetworkString("pk_chatmsg")
 util.AddNetworkString("pk_notify")
 util.AddNetworkString("pk_teamselect")
 util.AddNetworkString("pk_helpmenu")
+util.AddNetworkString("pk_settingsmenu")
 util.AddNetworkString("pk_gamenotify")
 util.AddNetworkString("killstreakmessage")
 

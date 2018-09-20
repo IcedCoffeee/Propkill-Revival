@@ -1,6 +1,7 @@
 function GM:PlayerInitialSpawn(ply)
 	ply:SetTeam(TEAM_UNASSIGNED)
 	ply.temp = 0
+	ply:ConCommand("gm_showteam")
 	if ply:IsBot() then
 		ply:SetTeam(math.random(1,2))
 	end
@@ -24,6 +25,9 @@ function GetLeader()
 end
 
 function GM:PlayerSpawn(ply)
+	player_manager.SetPlayerClass(ply, "player_sandbox")
+	BaseClass.PlayerSpawn(self, ply)
+
 	if ply:Team() == TEAM_UNASSIGNED then
 		ply:StripWeapons()
 		ply:Spectate(OBS_MODE_ROAMING)
@@ -33,7 +37,6 @@ function GM:PlayerSpawn(ply)
 	end
 
 	ply.temp = 0
-	ply:SetModel("models/player/alyx.mdl")
 
 	local col = ply:GetInfo("cl_playercolor")
 	ply:SetPlayerColor(Vector(col))
@@ -225,3 +228,4 @@ end)
 
 function GM:ShowTeam(ply) net.Start("pk_teamselect") net.Send(ply) end
 function GM:ShowHelp(ply) net.Start("pk_helpmenu") net.Send(ply) end
+function GM:ShowSpare2(ply) net.Start("pk_settingsmenu") net.Send(ply) end
