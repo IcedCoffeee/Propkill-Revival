@@ -24,10 +24,7 @@ function GetLeader()
 	end
 end
 
-function GM:PlayerSpawn(ply)
-	player_manager.SetPlayerClass(ply, "player_sandbox")
-	BaseClass.PlayerSpawn(self, ply)
-
+hook.Add("PlayerSpawn", "PK_PlayerSpawn", function(ply)
 	if ply:Team() == TEAM_UNASSIGNED then
 		ply:StripWeapons()
 		ply:Spectate(OBS_MODE_ROAMING)
@@ -38,16 +35,18 @@ function GM:PlayerSpawn(ply)
 
 	ply.temp = 0
 
-	local col = ply:GetInfo("cl_playercolor")
+	/*local col = ply:GetInfo("cl_playercolor")
 	ply:SetPlayerColor(Vector(col))
 
 	local col = ply:GetInfo("cl_weaponcolor")
-	ply:SetWeaponColor(Vector(col))
-
-	ply:SetHealth(1)
+	ply:SetWeaponColor(Vector(col))*/
 	ply:SetWalkSpeed(400)
 	ply:SetRunSpeed(400)
 	ply:SetJumpPower(200)
+end
+
+hook.Add("PlayerLoadout", "PK_PlayerSpawn", function(ply)
+	ply:SetHealth(1)
 	ply:Give("weapon_physgun")
 end
 
