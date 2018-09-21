@@ -4,8 +4,12 @@ AddCSLuaFile("sh_streaksounds.lua")
 
 util.AddNetworkString("killstreakmessage")
 
+hook.Add("PlayerInitialSpawn", "PK_ResetStreakCount", function(ply)
+	ply.streak = 0
+end)
+
 function handlestreak(ply)
-	if IsValid(ply) then
+	if IsValid(ply) and ply.streak != nil then
 		for k,v in pairs(streaks) do
 			if ply.streak == 1 and firstblood == 1 then
 				net.Start("killstreakmessage")
@@ -26,8 +30,17 @@ function handlestreak(ply)
 	end
 end
 
-hook.Add("PlayerDeath", "PK_HandleStreak", function(ply, attacker, dmg)
+hook.Add("PlayerDeath", "PK_HandleStreak", function(ply, inflictor, dmg)
+	if (inflictor:GetClass() == "prop_physics") then 
+		local propOwner = inflictor.Owner
+		attacker = propOwner
+
+		if (propOwner != ply) then
+			attacker.streak = attacker.streak + 1
+		end
+	end
 	handlestreak(attacker)
+	ply.streak = 0
 end)
 
 hook.Add("PlayerSpawn", "PK_ResetStreakCount", function(ply)

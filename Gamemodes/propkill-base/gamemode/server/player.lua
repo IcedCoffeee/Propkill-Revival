@@ -54,6 +54,7 @@ function GM:PlayerSpawn(ply)
 		ply:UnSpectate()
 	end
 	ply.temp = 0
+	ply.streak = 0
 	ply:SetWalkSpeed(400)
 	ply:SetRunSpeed(400)
 	ply:SetJumpPower(200)
@@ -77,6 +78,7 @@ function GM:PlayerDeath(ply, inflictor, attacker)
 			attacker:AddFrags(1)
 			MsgAll(attacker:Nick() .. " killed " .. ply:Nick() .. "!")
 			attacker.temp = attacker.temp + 1
+			attacker.streak = attacker.streak + 1
 			attacker:SendLua("surface.PlaySound(\"/buttons/lightswitch2.wav\")")
 		elseif (propOwner == ply) then
 			MsgAll(attacker:Nick() .. " propkilled himself!")
@@ -84,6 +86,7 @@ function GM:PlayerDeath(ply, inflictor, attacker)
 	end
 
 	ply.temp = 0
+	ply.streak = 0
 	ply.NextSpawnTime = CurTime() + 2
 
 	net.Start("KilledByProp")
