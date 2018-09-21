@@ -1,5 +1,3 @@
-include("sh_streaksounds.lua")
-
 local streakdata = {}
 	streakdata.active = false
 	streakdata.text = ""

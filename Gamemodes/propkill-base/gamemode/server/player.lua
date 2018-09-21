@@ -78,7 +78,6 @@ function GM:PlayerDeath(ply, inflictor, attacker)
 			attacker:AddFrags(1)
 			MsgAll(attacker:Nick() .. " killed " .. ply:Nick() .. "!")
 			attacker.temp = attacker.temp + 1
-			attacker.streak = attacker.streak + 1
 			attacker:SendLua("surface.PlaySound(\"/buttons/lightswitch2.wav\")")
 		elseif (propOwner == ply) then
 			MsgAll(attacker:Nick() .. " propkilled himself!")
