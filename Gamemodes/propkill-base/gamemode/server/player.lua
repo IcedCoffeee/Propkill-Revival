@@ -24,31 +24,44 @@ function GetLeader()
 	end
 end
 
-hook.Add("PlayerSpawn", "PK_PlayerSpawn", function(ply)
+function GM:PlayerSetModel(ply)
+	local cl_playermodel = ply:GetInfo("cl_playermodel")
+	local modelname = player_manager.TranslatePlayerModel(cl_playermodel)
+	util.PrecacheModel(modelname)
+	ply:SetModel(modelname)
+
+	local col = ply:GetInfo("cl_playercolor")
+	ply:SetPlayerColor(Vector(col))
+end
+
+function PK_PlayerLoadout(ply)
+	if ply:Team() != TEAM_UNASSIGNED then
+		ply:SetHealth(1)
+		ply:Give("weapon_physgun")
+	end
+
+	local col = ply:GetInfo("cl_weaponcolor")
+	ply:SetWeaponColor(Vector(col))
+end
+hook.Add("PlayerLoadout", "PK_PlayerSpawn", PK_PlayerLoadout)
+
+
+function GM:PlayerSpawn(ply)
 	if ply:Team() == TEAM_UNASSIGNED then
 		ply:StripWeapons()
-		ply:Spectate(OBS_MODE_ROAMING)
-		return
+		GAMEMODE:PlayerSpawnAsSpectator(ply)
 	else
 		ply:UnSpectate()
 	end
-
 	ply.temp = 0
-
-	/*local col = ply:GetInfo("cl_playercolor")
-	ply:SetPlayerColor(Vector(col))
-
-	local col = ply:GetInfo("cl_weaponcolor")
-	ply:SetWeaponColor(Vector(col))*/
 	ply:SetWalkSpeed(400)
 	ply:SetRunSpeed(400)
 	ply:SetJumpPower(200)
-end)
 
-hook.Add("PlayerLoadout", "PK_PlayerSpawn", function(ply)
-	ply:SetHealth(1)
-	ply:Give("weapon_physgun")
-end)
+	hook.Call("PlayerLoadout", GAMEMODE, ply)
+	hook.Call("PlayerSetModel", GAMEMODE, ply)
+	ply:SetupHands()
+end
 
 function GM:OnPlayerChangedTeam(ply, old, new)
 	ChatMsg({team.GetColor(old), ply:Nick(), cwhite, " has joined team ", team.GetColor(new), team.GetName(new), "!"})
@@ -65,7 +78,6 @@ function GM:PlayerDeath(ply, inflictor, attacker)
 			MsgAll(attacker:Nick() .. " killed " .. ply:Nick() .. "!")
 			attacker.temp = attacker.temp + 1
 			attacker:SendLua("surface.PlaySound(\"/buttons/lightswitch2.wav\")")
-			handlestreak(attacker)
 		elseif (propOwner == ply) then
 			MsgAll(attacker:Nick() .. " propkilled himself!")
 		end
@@ -81,28 +93,6 @@ function GM:PlayerDeath(ply, inflictor, attacker)
 	net.Broadcast()
 	
 	GetLeader()
-end
-
-function handlestreak(ply)
-	if IsValid(ply) then
-		for k,v in pairs(streaks) do
-			if ply.temp == 1 and firstblood == 1 then
-				net.Start("killstreakmessage")
-				net.WriteTable({text = ply:Nick() .. " " .. v.text, sound = v.sound})
-				net.Broadcast()
-				firstblood = 0
-			elseif ply.temp == k and ply.temp != 1 and ply.temp <= 16 then
-				net.Start("killstreakmessage")
-				net.WriteTable({text = ply:Nick() .. " " .. v.text, sound = v.sound})
-				net.Broadcast()
-			end
-		end
-		if ply.temp >= 17 then
-			net.Start("killstreakmessage")
-			net.WriteTable({text = ply:Nick() .. " " .. streaks[17].text, sound = streaks[17].sound})
-			net.Broadcast()
-		end
-	end
 end
 
 function GM:PlayerConnect(name, ip)

@@ -70,36 +70,300 @@ surface.CreateFont( "loading_font", {
 } )
 
 /*------------------------------------------
-				F1 Propkill Help
+				F1 Propkill Menu
 ------------------------------------------*/
+pk_leaderboard_names = {}
 
-function PKHelp()
-	local helpframe = vgui.Create("DFrame")
-	helpframe:SetSize(ScrW() - 200, ScrH() - 150)
-	helpframe:Center()
-	helpframe:ShowCloseButton(true)
-	helpframe:SetDraggable(false)
-	helpframe:SetTitle("Propkill Help")
-	function helpframe:Paint(w, h)
-		draw.SimpleText("Loading...", "loading_font", 870, 480, Color(255,255,255,150), TEXT_ALIGN_CENTER, TEXT_ALIGN_TOP)
+function PKMenu()
+	PK_RequestLeaderboard()
+	for k,v in pairs(pk_leaderboard) do
+		steamworks.RequestPlayerInfo(util.SteamIDTo64(v["steamid"]))
+	end
+
+	-------------------------------------------- HELP PANEL
+	local mainframe = vgui.Create("DFrame")
+	mainframe:SetSize(ScrW() - 200, ScrH() - 150)
+	mainframe:Center()
+	mainframe:ShowCloseButton(true)
+	mainframe:SetDraggable(false)
+	mainframe:SetTitle("Propkill Menu")
+	function mainframe:Paint(w, h)
 		draw.RoundedBox(0, 0, 0, w, h, Color(40, 40, 40, 170))
 	end
-	helpframe:MakePopup()
+	function mainframe:OnClose()
+		mainframe:Clear()
+		timer.Destroy("PK_Update_Leaderboard_Rows") 
+		mainframe:Remove()
+	end
+	mainframe:MakePopup()
 
-	local scrollpanel = vgui.Create("DScrollPanel", helpframe)
-	scrollpanel:SetSize(ScrW() - 190, ScrH() - 135)
-	scrollpanel:SetPos(0, 25)
-	function scrollpanel:Paint(w, h)
-		draw.RoundedBox(0, 0, 0, w, h, Color(70, 70, 70, 170))
+	local sheet = vgui.Create("DPropertySheet", mainframe)
+	sheet:Dock(FILL)
+	sheet:SetPadding(0)
+	function sheet:Paint(w, h)
+		draw.RoundedBox(0, 0, 0, w, h, Color(40, 40, 40, 170))
 	end
 
-	local html = vgui.Create("HTML", helpframe)
-	html:SetPos(0, 0)
-	html:Dock(FILL)
+	local helppanel = vgui.Create("DPanel", sheet)
+	helppanel:Dock(FILL)
+	function helppanel:Paint(w, h)
+		return
+	end
+
+	local html = vgui.Create("HTML", helppanel)
+	html:StretchToParent(0,0,0,0)
+	html:DockMargin( 0, 0, 0, 0 )
 	html:OpenURL("http://steamcommunity.com/sharedfiles/filedetails/?id=572479773")
+	sheet:AddSheet("Help", html, "icon16/html.png")
+
+	--------------------------------------------
+
+	-------------------------------------------- SETTINGS PANEL
+
+	local settingspanel = vgui.Create("DPanel", sheet)
+	settingspanel:Dock(FILL)
+	function settingspanel:Paint(w, h)
+		return
+	end
+
+	local settingsscrollpanel = vgui.Create("DScrollPanel", settingspanel)
+	settingsscrollpanel:SetSize(ScrW() - 190, ScrH() - 135)
+	settingsscrollpanel:SetPos(0, 25)
+	function settingsscrollpanel:Paint(w, h)
+		return
+	end
+
+	local physics_checkbox = vgui.Create("DCheckBoxLabel")
+	physics_checkbox:SetParent(settingsscrollpanel)
+	physics_checkbox:SetPos(25, 50)			
+	physics_checkbox:SetText("Use lerp command (more responsive props)")
+	physics_checkbox:SetValue(pk_ms_settings_table.NoLerp)
+	physics_checkbox:SizeToContents()
+	function physics_checkbox:OnChange(val)
+		RunConsoleCommand("pk_cl_physics")
+	end
+
+	local visuals_checkbox = vgui.Create("DCheckBoxLabel")
+	visuals_checkbox:SetParent(settingsscrollpanel)
+	visuals_checkbox:SetPos(25, 75)
+	visuals_checkbox:SetText("Enable built-in wallhack and ESP")
+	visuals_checkbox:SetValue(pk_ms_settings_table.PlayerWalls)
+	visuals_checkbox:SizeToContents()
+	function visuals_checkbox:OnChange(val)
+		RunConsoleCommand("pk_visuals")
+	end
+
+	local rooftiles_checkbox = vgui.Create("DCheckBoxLabel")
+	rooftiles_checkbox:SetParent(settingsscrollpanel)
+	rooftiles_checkbox:SetPos(25, 100)	
+	--rooftiles_checkbox:Toggle()
+	rooftiles_checkbox:SetText("Enable rooftiles in skybox")
+	rooftiles_checkbox:SetValue(pk_ms_settings_table.RoofTiles)
+	rooftiles_checkbox:SizeToContents()
+	function rooftiles_checkbox:OnChange(val)
+		RunConsoleCommand("pk_rooftiles")
+	end
+
+	local removeskybox_checkbox = vgui.Create("DCheckBoxLabel")
+	removeskybox_checkbox:SetParent(settingsscrollpanel)
+	removeskybox_checkbox:SetPos(25, 125)
+	--removeskybox_checkbox:Toggle()
+	removeskybox_checkbox:SetText("Replace skybox with grey")
+	removeskybox_checkbox:SetValue(pk_ms_settings_table.RemoveSkybox)
+	removeskybox_checkbox:SizeToContents()
+	function removeskybox_checkbox:OnChange(val)
+		RunConsoleCommand("pk_removeskybox")
+	end
+
+	local vertbeam_checkbox = vgui.Create("DCheckBoxLabel")
+	vertbeam_checkbox:SetParent(settingsscrollpanel)
+	vertbeam_checkbox:SetPos(25, 150)
+	--vertbeam_checkbox:Toggle()
+	vertbeam_checkbox:SetText("Vertical beam on players")
+	vertbeam_checkbox:SetValue(pk_ms_settings_table.VertBeam)
+	vertbeam_checkbox:SizeToContents()
+	function vertbeam_checkbox:OnChange(val)
+		RunConsoleCommand("pk_vertbeam")
+	end
+	sheet:AddSheet("Settings", settingspanel, "icon16/cog.png")
+
+	--------------------------------------------
+
+	-------------------------------------------- LEADERBOARD PANEL
+
+	local leaderboardsheet = vgui.Create("DColumnSheet", sheet)
+	leaderboardsheet:Dock(FILL)
+
+	local leaderboardpanel = vgui.Create("DScrollPanel", leaderboardsheet)
+	leaderboardpanel:Dock(FILL)
+	leaderboardpanel.Paint = function(self, w, h) return end
+	leaderboardsheet:AddSheet("  Leaderboard", leaderboardpanel, "icon16/award_star_gold_1.png")
+
+	function updateRows()
+		leaderboardpanel:Clear()
+
+		local headerrow = vgui.Create("DPanel", leaderboardpanel)
+		headerrow:SetSize(0,30)
+		headerrow:Dock(TOP)
+		headerrow:DockMargin(0,10,10,5)
+		headerrow:SetHeight(25)
+		function headerrow:Paint(w,h)
+			draw.RoundedBox(0, 0, 0, w, h, Color(100,100,100))
+		end
+
+		local ranknum = vgui.Create("DLabel", headerrow)
+		ranknum:SetText("")
+		ranknum:Dock(LEFT)
+		ranknum:SetWidth(100)
+		function ranknum:Paint(w,h)
+			draw.SimpleText("Rank", "pk_teamfont", w/2, h/2, Color(0,0,0), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
+		end
+
+		local plyname = vgui.Create("DLabel", headerrow)
+		plyname:SetText("")
+		plyname:Dock(LEFT)
+		plyname:SetWidth(200)
+		function plyname:Paint(w,h)
+			draw.SimpleText("Player", "pk_teamfont", w/2, h/2, Color(0,0,0), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
+		end
+
+		local totalwins = vgui.Create("DLabel", headerrow)
+		totalwins:SetText("")
+		totalwins:Dock(LEFT)
+		totalwins:SetWidth(100)
+		function totalwins:Paint(w,h)
+			draw.SimpleText("Total Wins", "pk_teamfont", w/2, h/2, Color(0,0,0), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
+		end
+
+		local totallosses = vgui.Create("DLabel", headerrow)
+		totallosses:SetText("")
+		totallosses:Dock(LEFT)
+		totallosses:SetWidth(100)
+		function totallosses:Paint(w,h)
+			draw.SimpleText("Total Losses", "pk_teamfont", w/2, h/2, Color(0,0,0), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
+		end
+
+		for k,v in pairs(pk_leaderboard) do
+			local row = vgui.Create("DPanel", leaderboardpanel)
+			row:SetSize(0,30)
+			row:Dock(TOP)
+			row:DockMargin(0,0,10,10)
+			row:SetHeight(25)
+			local colour = Color(255,255,102)
+			if v["rank"] / #pk_leaderboard <= 0.5 then
+				colour = Color(255,255,102)
+			else
+				colour = Color(153,102,51)
+			end
+			function row:Paint(w,h)
+				draw.RoundedBox(0, 0, 0, w, h, colour)
+			end
+	
+			local ranknum = vgui.Create("DLabel", row)
+			ranknum:SetText("")
+			ranknum:Dock(LEFT)
+			ranknum:SetWidth(100)
+			function ranknum:Paint(w,h)
+				draw.SimpleText(v["rank"], "pk_teamfont", w/2, h/2, Color(0,0,0), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
+			end
+	
+			local avatar = vgui.Create("AvatarImage", row)
+			avatar:Dock(LEFT)
+			avatar:DockMargin(12.5,0,12.5,0)
+			avatar:SetSize(25,25)
+			avatar:SetSteamID(util.SteamIDTo64(v["steamid"]), 32)
+	
+			local plyname = vgui.Create("DLabel", row)
+			plyname:SetText("")
+			plyname:Dock(LEFT)
+			plyname:SetWidth(150)
+			pk_leaderboard_names[k] = steamworks.GetPlayerName(util.SteamIDTo64(v["steamid"]))
+
+			local actualname = pk_leaderboard_names[k]
+
+			if actualname == "" then
+				actualname = "BOT"
+			end
+
+			function plyname:Paint(w,h)
+				draw.SimpleText(actualname, "pk_teamfont", w/2, h/2, Color(0,0,0), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
+			end
+	
+			local totalwins = vgui.Create("DLabel", row)
+			totalwins:SetText("")
+			totalwins:Dock(LEFT)
+			totalwins:SetWidth(100)
+			function totalwins:Paint(w,h)
+				draw.SimpleText(v["wins"], "pk_teamfont", w/2, h/2, Color(0,0,0), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
+			end
+	
+			local totallosses = vgui.Create("DLabel", row)
+			totallosses:SetText("")
+			totallosses:Dock(LEFT)
+			totallosses:SetWidth(100)
+			function totallosses:Paint(w,h)
+				draw.SimpleText(v["losses"], "pk_teamfont", w/2, h/2, Color(0,0,0), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
+			end
+		end
+	end
+
+	updateRows()
+
+	timer.Create("PK_Update_Leaderboard_Rows", 1, 0, updateRows)
+
+	local matchhistorypanel = vgui.Create("DScrollPanel", leaderboardsheet)
+	matchhistorypanel:Dock(FILL)
+	matchhistorypanel.Paint = function(self, w, h) return end
+	leaderboardsheet:AddSheet(" Match History", matchhistorypanel, "icon16/book_previous.png")
+
+	local duelpanel = vgui.Create("DScrollPanel", leaderboardsheet)
+	duelpanel:Dock(FILL)
+	duelpanel.Paint = function(self, w, h) return end
+	leaderboardsheet:AddSheet(" Duel", duelpanel, "icon16/lightning.png")
+
+	local opponentselect = vgui.Create("DComboBox", duelpanel)
+	opponentselect:SetPos(5, 5)
+	opponentselect:SetSize(100, 20)
+	opponentselect:SetValue("Select opponent")
+	for k,v in pairs(player.GetAll()) do
+		if v != LocalPlayer() then
+			opponentselect:AddChoice(v:Nick())
+		end
+	end
+	
+	local duelinvitebutton = vgui.Create("DButton", duelpanel)
+	duelinvitebutton:SetText("Send Invite")
+	duelinvitebutton:SetPos(25, 50)
+	duelinvitebutton:SetSize(250, 30)
+	duelinvitebutton.DoClick = function()
+		local opponent = nil
+		for k,v in pairs(player.GetAll()) do
+			if v:Nick() == opponentselect:GetSelected() then
+				opponent = v
+			end
+		end
+		if opponent == nil then
+			return
+		end
+		net.Start("pk_duelinvite")
+			net.WriteEntity(opponent)
+		net.SendToServer()
+		duelinvitebutton:SetEnabled(false)
+		timer.Create("PK_duelinvitebutton", 60, 1, function()
+			if IsValid(duelinvitebutton) then
+				duelinvitebutton:SetEnabled(true)
+			end
+		end)
+	end
+	if timer.Exists("PK_duelinvitebutton") then
+		duelinvitebutton:SetEnabled(false)
+	end
+
+	sheet:AddSheet("Ranked", leaderboardsheet, "icon16/award_star_gold_1.png")
+
 end
 
-net.Receive("pk_helpmenu", PKHelp)
+net.Receive("pk_helpmenu", PKMenu)
 
 /*------------------------------------------
 				F2 Team Select
@@ -173,80 +437,54 @@ net.Receive("pk_teamselect", function()
 end)
 
 /*------------------------------------------
-				F4 PK Settings
+				Duel Invitation
 ------------------------------------------*/
 
-function PKSettings()
-	local helpframe = vgui.Create("DFrame")
-	helpframe:SetSize(ScrW() - 500, ScrH() - 400)
-	helpframe:Center()
-	helpframe:ShowCloseButton(true)
-	helpframe:SetDraggable(false)
-	helpframe:SetTitle("Propkill Settings")
-	function helpframe:Paint(w, h)
+function PK_DuelInviteMenu()
+	sender = net.ReadEntity()
+	surface.PlaySound("buttons/button17.wav")
+
+	local mainframe = vgui.Create("DFrame")
+	mainframe:SetSize(200, 200)
+	mainframe:Center()
+	mainframe:ShowCloseButton(true)
+	mainframe:SetDraggable(false)
+	mainframe:SetTitle("Duel Invitation")
+	function mainframe:Paint(w, h)
 		draw.RoundedBox(0, 0, 0, w, h, Color(40, 40, 40, 170))
 	end
-	helpframe:MakePopup()
+	function mainframe:OnClose()
+		mainframe:Clear()
+		timer.Destroy("PK_Update_Leaderboard_Rows") 
+		mainframe:Remove()
+	end
+	mainframe:MakePopup()
 
-	local scrollpanel = vgui.Create("DScrollPanel", helpframe)
-	scrollpanel:SetSize(ScrW() - 190, ScrH() - 135)
-	scrollpanel:SetPos(0, 25)
-	function scrollpanel:Paint(w, h)
-		draw.RoundedBox(0, 0, 0, w, h, Color(70, 70, 70, 170))
+	local DLabel = vgui.Create("DLabel", mainframe)
+	DLabel:Dock(TOP)
+	DLabel:DockMargin(0,20,0,40)
+	DLabel:SizeToContents()
+	DLabel:SetText(sender:Nick() .. " has requested a duel!")
+
+	local DermaButton = vgui.Create("DButton", mainframe)
+	DermaButton:SetText("Accept")
+	DermaButton:SetSize(100, 30)
+	DermaButton:Dock(TOP)
+	DermaButton.DoClick = function()
+		net.Start("pk_acceptduel")
+		net.SendToServer()
+		mainframe:Remove()
 	end
 
-	local physics_checkbox = vgui.Create("DCheckBoxLabel")
-	physics_checkbox:SetParent(scrollpanel)
-	physics_checkbox:SetPos(25, 50)			
-	physics_checkbox:SetText("Use lerp command (more responsive props)")
-	physics_checkbox:SetValue(pk_ms_settings_table.NoLerp)
-	physics_checkbox:SizeToContents()
-	function physics_checkbox:OnChange(val)
-		RunConsoleCommand("pk_cl_physics")
+	local DermaButton = vgui.Create("DButton", mainframe)
+	DermaButton:SetText("Decline")
+	DermaButton:SetSize(100, 30)
+	DermaButton:Dock(TOP)
+	DermaButton.DoClick = function()
+		net.Start("pk_declineduel")
+		net.SendToServer()
+		mainframe:Remove()
 	end
 
-	local visuals_checkbox = vgui.Create("DCheckBoxLabel")
-	visuals_checkbox:SetParent(scrollpanel)
-	visuals_checkbox:SetPos(25, 75)
-	visuals_checkbox:SetText("Enable built-in wallhack and ESP")
-	visuals_checkbox:SetValue(pk_ms_settings_table.PlayerWalls)
-	visuals_checkbox:SizeToContents()
-	function visuals_checkbox:OnChange(val)
-		RunConsoleCommand("pk_visuals")
-	end
-
-	local rooftiles_checkbox = vgui.Create("DCheckBoxLabel")
-	rooftiles_checkbox:SetParent(scrollpanel)
-	rooftiles_checkbox:SetPos(25, 100)	
-	--rooftiles_checkbox:Toggle()
-	rooftiles_checkbox:SetText("Enable rooftiles in skybox")
-	rooftiles_checkbox:SetValue(pk_ms_settings_table.RoofTiles)
-	rooftiles_checkbox:SizeToContents()
-	function rooftiles_checkbox:OnChange(val)
-		RunConsoleCommand("pk_rooftiles")
-	end
-
-	local removeskybox_checkbox = vgui.Create("DCheckBoxLabel")
-	removeskybox_checkbox:SetParent(scrollpanel)
-	removeskybox_checkbox:SetPos(25, 125)
-	--removeskybox_checkbox:Toggle()
-	removeskybox_checkbox:SetText("Replace skybox with grey")
-	removeskybox_checkbox:SetValue(pk_ms_settings_table.RemoveSkybox)
-	removeskybox_checkbox:SizeToContents()
-	function removeskybox_checkbox:OnChange(val)
-		RunConsoleCommand("pk_removeskybox")
-	end
-
-	local vertbeam_checkbox = vgui.Create("DCheckBoxLabel")
-	vertbeam_checkbox:SetParent(scrollpanel)
-	vertbeam_checkbox:SetPos(25, 150)
-	--vertbeam_checkbox:Toggle()
-	vertbeam_checkbox:SetText("Vertical beam on players")
-	vertbeam_checkbox:SetValue(pk_ms_settings_table.VertBeam)
-	vertbeam_checkbox:SizeToContents()
-	function vertbeam_checkbox:OnChange(val)
-		RunConsoleCommand("pk_vertbeam")
-	end
 end
-
-net.Receive("pk_settingsmenu", PKSettings)
+net.Receive("pk_duelinvite", PK_DuelInviteMenu)

@@ -1,0 +1,6 @@
+"AddonInfo"
+{
+	"name" "Propkill Killstreaks"
+	"author_name" "Almighty Laxz"
+	"info" "{"description":"","tags":["fun","realism"],"type":"gamemode"}"
+}

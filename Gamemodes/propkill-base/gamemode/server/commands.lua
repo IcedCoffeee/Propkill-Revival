@@ -1,4 +1,8 @@
 function ChangeTeam(ply, cmd, args)
+	if GetGlobalBool("PK_Dueling") then
+		ply:ChatPrint("no")
+		return
+	end
 	local teamindex = tonumber(args[1])
 	if teamindex < 1000 and team.Valid(teamindex) then
 		GAMEMODE:PlayerJoinTeam(ply, teamindex)
