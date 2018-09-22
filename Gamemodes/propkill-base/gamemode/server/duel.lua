@@ -87,6 +87,7 @@ function PK_StartDuel(ply1, ply2)
 	ply2:SetDeaths(0)
 	ply1:SetFrags(0)
 	ply2:SetFrags(0)
+	ChatMsg({Color(0,200,0), "[PK:R]: ", Color(200,200,200), ply1:Nick(), " has started a duel with ", ply2:Nick(), "!"})
 end
 
 function PK_FinishDuel()
