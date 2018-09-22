@@ -42,6 +42,7 @@ util.AddNetworkString("pk_leaderboard")
 util.AddNetworkString("pk_duelinvite")
 util.AddNetworkString("pk_acceptduel")
 util.AddNetworkString("pk_declineduel")
+util.AddNetworkString("pk_matchhistory")
 
 function GM:Initialize()
 	LogPrint("Initializing...")

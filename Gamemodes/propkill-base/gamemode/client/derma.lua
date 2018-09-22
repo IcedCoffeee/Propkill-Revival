@@ -76,6 +76,7 @@ pk_leaderboard_names = {}
 
 function PKMenu()
 	PK_RequestLeaderboard()
+	PK_RequestMatchHistory()
 	for k,v in pairs(pk_leaderboard) do
 		steamworks.RequestPlayerInfo(util.SteamIDTo64(v["steamid"]))
 	end
@@ -93,6 +94,7 @@ function PKMenu()
 	function mainframe:OnClose()
 		mainframe:Clear()
 		timer.Destroy("PK_Update_Leaderboard_Rows") 
+		timer.Destroy("PK_Update_Match_History_Rows")
 		mainframe:Remove()
 	end
 	mainframe:MakePopup()
@@ -120,18 +122,16 @@ function PKMenu()
 
 	-------------------------------------------- SETTINGS PANEL
 
-	local settingspanel = vgui.Create("DPanel", sheet)
-	settingspanel:Dock(FILL)
-	function settingspanel:Paint(w, h)
-		return
-	end
+	local settingssheet = vgui.Create("DColumnSheet", sheet)
+	settingssheet:Dock(FILL)
 
-	local settingsscrollpanel = vgui.Create("DScrollPanel", settingspanel)
+	local settingsscrollpanel = vgui.Create("DScrollPanel", sheet)
 	settingsscrollpanel:SetSize(ScrW() - 190, ScrH() - 135)
 	settingsscrollpanel:SetPos(0, 25)
 	function settingsscrollpanel:Paint(w, h)
 		return
 	end
+	settingssheet:AddSheet("Client", settingsscrollpanel, "icon16/cog.png")
 
 	local physics_checkbox = vgui.Create("DCheckBoxLabel")
 	physics_checkbox:SetParent(settingsscrollpanel)
@@ -185,7 +185,49 @@ function PKMenu()
 	function vertbeam_checkbox:OnChange(val)
 		RunConsoleCommand("pk_vertbeam")
 	end
-	sheet:AddSheet("Settings", settingspanel, "icon16/cog.png")
+	sheet:AddSheet("Settings", settingssheet, "icon16/cog.png")
+
+	local serversettingsscrollpanel = vgui.Create("DScrollPanel", sheet)
+	serversettingsscrollpanel:SetSize(ScrW() - 190, ScrH() - 135)
+	serversettingsscrollpanel:SetPos(0, 25)
+	serversettingsscrollpanel:SetEnabled(false)
+	if LocalPlayer():IsSuperAdmin() then
+		serversettingsscrollpanel:SetEnabled(true)
+	end
+	function serversettingsscrollpanel:Paint(w, h)
+		return
+	end
+	settingssheet:AddSheet("Server", serversettingsscrollpanel, "icon16/cog.png")
+
+	local physsettings_checkbox = vgui.Create("DCheckBoxLabel")
+	physsettings_checkbox:SetParent(serversettingsscrollpanel)
+	physsettings_checkbox:SetPos(25, 50)			
+	physsettings_checkbox:SetText("Australian physics speeds")
+
+	australianphyssetings = {
+		LookAheadTimeObjectsVsObject = 2,
+		LookAheadTimeObjectsVsWorld = 21,
+		MaxAngularVelocity = 3636,
+		MaxCollisionChecksPerTimestep = 5000,
+		MaxCollisionsPerObjectPerTimestep = 48,
+		MaxFrictionMass = 1,
+		MaxVelocity = 2200,
+		MinFrictionMass = 99999,
+	}
+
+	if physenv.GetPerformanceSettings() == australianphyssetings then
+		physsettings_checkbox:SetValue(true)
+	else
+		physsettings_checkbox:SetValue(false)
+	end
+	physsettings_checkbox:SizeToContents()
+	function physsettings_checkbox:OnChange(val)
+		if physsettings_checkbox:GetValue() then
+			RunConsoleCommand("pk_physsetings", 0)
+		else
+			RunConsoleCommand("pk_physsetings", 1)
+		end
+	end
 
 	--------------------------------------------
 
@@ -199,13 +241,13 @@ function PKMenu()
 	leaderboardpanel.Paint = function(self, w, h) return end
 	leaderboardsheet:AddSheet("  Leaderboard", leaderboardpanel, "icon16/award_star_gold_1.png")
 
-	function updateRows()
+	function updateLeaderboardRows()
 		leaderboardpanel:Clear()
 
 		local headerrow = vgui.Create("DPanel", leaderboardpanel)
 		headerrow:SetSize(0,30)
 		headerrow:Dock(TOP)
-		headerrow:DockMargin(0,10,10,5)
+		headerrow:DockMargin(0,10,10,10)
 		headerrow:SetHeight(25)
 		function headerrow:Paint(w,h)
 			draw.RoundedBox(0, 0, 0, w, h, Color(100,100,100))
@@ -250,8 +292,10 @@ function PKMenu()
 			row:DockMargin(0,0,10,10)
 			row:SetHeight(25)
 			local colour = Color(255,255,102)
-			if v["rank"] / #pk_leaderboard <= 0.5 then
+			if v["rank"] / #pk_leaderboard <= 0.34 then
 				colour = Color(255,255,102)
+			elseif v["rank"] / #pk_leaderboard <= 0.68 then
+				colour = Color(217,217,217)
 			else
 				colour = Color(153,102,51)
 			end
@@ -307,14 +351,80 @@ function PKMenu()
 		end
 	end
 
-	updateRows()
+	updateLeaderboardRows()
 
-	timer.Create("PK_Update_Leaderboard_Rows", 1, 0, updateRows)
+	timer.Create("PK_Update_Leaderboard_Rows", 1, 0, updateLeaderboardRows)
 
 	local matchhistorypanel = vgui.Create("DScrollPanel", leaderboardsheet)
 	matchhistorypanel:Dock(FILL)
 	matchhistorypanel.Paint = function(self, w, h) return end
-	leaderboardsheet:AddSheet(" Match History", matchhistorypanel, "icon16/book_previous.png")
+	leaderboardsheet:AddSheet("Match History", matchhistorypanel, "icon16/book_previous.png")
+
+	function updateMatchHistoryRows()
+			matchhistorypanel:Clear()
+
+		for k,v in pairs(pk_matchhistory) do
+			local row = vgui.Create("DPanel", matchhistorypanel)
+			row:SetSize(0,30)
+			row:Dock(TOP)
+			row:DockMargin(0,10,10,5)
+			row:SetHeight(32)
+			function row:Paint(w,h)
+				draw.RoundedBox(0, 0, 0, w, h, Color(150,150,150))
+			end
+
+			local winneravatar = vgui.Create("AvatarImage", row)
+			winneravatar:Dock(LEFT)
+			winneravatar:DockMargin(12.5,0,12.5,0)
+			winneravatar:SetSize(32,32)
+			winneravatar:SetSteamID(util.SteamIDTo64(v.winner), 32)
+
+			local plyname = vgui.Create("DLabel", row)
+			plyname:SetText("")
+			plyname:Dock(LEFT)
+			plyname:SetWidth(200)
+			function plyname:Paint(w,h)
+				draw.SimpleText(steamworks.GetPlayerName(util.SteamIDTo64(v.winner)), "pk_teamfont", w/2, h/2, Color(0,0,0), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
+			end
+
+			local loseravatar = vgui.Create("AvatarImage", row)
+			loseravatar:Dock(LEFT)
+			loseravatar:DockMargin(12.5,0,12.5,0)
+			loseravatar:SetSize(32,32)
+			loseravatar:SetSteamID(util.SteamIDTo64(v.loser), 32)
+
+			local plyname2 = vgui.Create("DLabel", row)
+			plyname2:SetText("")
+			plyname2:Dock(LEFT)
+			plyname2:SetWidth(200)
+			function plyname2:Paint(w,h)
+				draw.SimpleText(steamworks.GetPlayerName(util.SteamIDTo64(v.loser)), "pk_teamfont", w/2, h/2, Color(0,0,0), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
+			end
+
+			local score = vgui.Create("DLabel", row)
+			score:SetText("")
+			score:Dock(LEFT)
+			score:SetWidth(200)
+			function score:Paint(w,h)
+				draw.SimpleText(v.winnerscore .. "-" .. v.loserscore, "pk_teamfont", w/2, h/2, Color(0,0,0), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
+			end
+
+			local date = vgui.Create("DLabel", row)
+			date:SetText("")
+			date:Dock(LEFT)
+			date:SetWidth(200)
+			function date:Paint(w,h)
+				draw.SimpleText(string.sub(v.createdAt, 1, 10), "pk_teamfont", w/2, h/2, Color(0,0,0), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
+			end
+		end
+	end
+	timer.Create("PK_Update_Match_History_Rows", 1, 0, updateMatchHistoryRows)
+
+	updateMatchHistoryRows()
+
+	--------------------------------------------
+
+	-------------------------------------------- DUEL PANEL
 
 	local duelpanel = vgui.Create("DScrollPanel", leaderboardsheet)
 	duelpanel:Dock(FILL)

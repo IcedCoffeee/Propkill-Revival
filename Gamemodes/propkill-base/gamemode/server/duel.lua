@@ -83,12 +83,21 @@ function PK_StartDuel(ply1, ply2)
 	SetGlobalInt("PK_ply2_score", 0)
 	SetGlobalEntity("PK_ply1", ply1)
 	SetGlobalEntity("PK_ply2", ply2)
+	ply1:SetDeaths(0)
+	ply2:SetDeaths(0)
+	ply1:SetFrags(0)
+	ply2:SetFrags(0)
 end
 
 function PK_FinishDuel()
 	SetGlobalBool("PK_Dueling", false)
 	winner = nil
 	loser = nil
+	winner_kills = nil
+	winner_deaths = nil
+	loser_kills = nil
+	loser_deaths = nil
+
 	if GetGlobalInt("PK_ply1_score") > GetGlobalInt("PK_ply2_score") then
 		winner = GetGlobalEntity("PK_ply1")
 		loser = GetGlobalEntity("PK_ply2")
@@ -97,24 +106,23 @@ function PK_FinishDuel()
 		loser = GetGlobalEntity("PK_ply1")
 	end
 	matchResult = {
-		["winner"] = winner:SteamID(),
-		["loser"] = loser:SteamID()
+		["winner"] = {["steamid"] = winner:SteamID(), ["score"] = loser:Deaths()},
+		["loser"] = { ["steamid"] = loser:SteamID(), ["score"] = winner:Deaths()}
 	}
 	uploadMatchResult(matchResult)
 	ChatMsg({Color(0,200,0), "[PK:R]: ", Color(200,200,200), winner:Nick(), " has won the duel! Final score: ", tostring(GetGlobalInt("PK_ply1_score")), "-", tostring(GetGlobalInt("PK_ply2_score"))})
-	timer.Create("PK_Delayed_Update_Leaderboard", 3, 1, PK_UpdateLeaderboard)
 end
 
 hook.Add("PlayerDeath", "PK_Duel_PlayerDeath", function(victim, inflictor, attacker)
 	if GetGlobalBool("PK_Dueling") then
 		if victim == GetGlobalEntity("PK_ply1") then
 			SetGlobalInt("PK_ply2_score", GetGlobalInt("PK_ply2_score") + 1)
-			if GetGlobalInt("PK_ply2_score") > 2 then
+			if GetGlobalInt("PK_ply2_score") >= 15 then
 				PK_FinishDuel()
 			end
 		elseif victim == GetGlobalEntity("PK_ply2") then
 			SetGlobalInt("PK_ply1_score", GetGlobalInt("PK_ply1_score") + 1)
-			if GetGlobalInt("PK_ply1_score") > 2 then
+			if GetGlobalInt("PK_ply1_score") >= 15 then
 				PK_FinishDuel()
 			end
 		end
