@@ -45,3 +45,7 @@ function GM:InitPostEntity()
 	game.ConsoleCommand("sv_sticktoground 0\n")
 	game.ConsoleCommand("sv_airaccelerate 2000\n")
 end
+
+hook.Add("CanProperty", "block_remover_property", function(ply, property, ent)
+	return false
+end)
