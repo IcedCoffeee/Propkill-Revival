@@ -49,3 +49,14 @@ end
 hook.Add("CanProperty", "block_remover_property", function(ply, property, ent)
 	return false
 end)
+
+hook.Add("PlayerFrozeObject", "PK_Limit_Frozen", function(ply, ent, physobj)
+	if PK_Config.limitfrozenprops then
+		if IsValid(ply.frozenprop) then
+			if ply.frozenprop != ent then
+				ply.frozenprop:Remove()
+			end
+		end
+		ply.frozenprop = ent
+	end
+end)

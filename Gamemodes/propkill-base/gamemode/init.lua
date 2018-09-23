@@ -15,6 +15,7 @@ include("server/rounds.lua")
 include("shared/entity.lua")
 include("server/leaderboard.lua")
 include("server/duel.lua")
+include("server/config.lua")
 
 AddCSLuaFile("cl_init.lua")
 AddCSLuaFile("shared.lua")
@@ -57,9 +58,6 @@ timer.Create("PK_Clear_Decals", 30, 0, function()
 		v:ConCommand("r_cleardecals")
 	end
 end)
-
-RunConsoleCommand("sbox_noclip", "0")
-RunConsoleCommand("sbox_maxprops", "7")
 
 
 -- Show notification when lua is updated live
