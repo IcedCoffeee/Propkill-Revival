@@ -14,8 +14,10 @@ function GM:PlayerSpawnRagdoll(ply) Notify(ply, "You can only spawn props!") ret
 
 hook.Add("PlayerSpawnProp", "pk_canspawnprop", function(ply, model)
 	if not ply:Alive() then
+		Notify(ply, "You can't spawn props while dead!")
 		return false
 	end
+	
 	if model == "models/props/de_tides/gate_large.mdl" and GetGlobalBool("PK_LockersOnly") == true then
 		Notify(ply, "Lockers only is enabled!")
 		return false

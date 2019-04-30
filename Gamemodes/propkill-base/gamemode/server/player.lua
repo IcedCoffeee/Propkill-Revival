@@ -34,7 +34,7 @@ function GM:PlayerSetModel(ply)
 	ply:SetPlayerColor(Vector(col))
 end
 
-function PK_PlayerLoadout(ply)
+local function PK_PlayerLoadout(ply)
 	if ply:Team() != TEAM_UNASSIGNED then
 		ply:SetHealth(1)
 		ply:Give("weapon_physgun")
@@ -53,6 +53,7 @@ function GM:PlayerSpawn(ply)
 	else
 		ply:UnSpectate()
 	end
+
 	ply.temp = 0
 	ply.streak = 0
 	ply:SetWalkSpeed(400)
@@ -69,33 +70,11 @@ function GM:OnPlayerChangedTeam(ply, old, new)
 	ply.NextSpawnTime = CurTime()
 end
 
-function GM:PlayerDeath(ply, inflictor, attacker)
-	if (inflictor:GetClass() == "prop_physics") then 
-		local propOwner = inflictor.Owner
-		attacker = propOwner
-
-		if (propOwner != ply) then
-			attacker:AddFrags(1)
-			MsgAll(attacker:Nick() .. " killed " .. ply:Nick() .. "!")
-			attacker.temp = attacker.temp + 1
-			attacker:SendLua("surface.PlaySound(\"/buttons/lightswitch2.wav\")")
-		elseif (propOwner == ply) then
-			MsgAll(attacker:Nick() .. " propkilled himself!")
-		end
-	end
-
-	ply.temp = 0
-	ply.streak = 0
-	ply.NextSpawnTime = CurTime() + 2
-
-	net.Start("KilledByProp")
-		net.WriteEntity(ply)
-		net.WriteString(inflictor:GetClass())
-		net.WriteEntity(attacker)
-	net.Broadcast()
+hook.Add("PlayerDeath", "PK_PlayerDeath", function(ply, inflictor, attacker)
+	ply.NextSpawnTime = CurTime() + 1
 	
 	GetLeader()
-end
+end)
 
 function GM:PlayerConnect(name, ip)
 	ChatMsg({Color(120,120,255), name, Color(255,255,255), " is connecting."})
@@ -106,40 +85,50 @@ function GM:PlayerDisconnected(ply)
 	timer.Simple(0.5, GetLeader)
 end 
 
-function GM:PlayerShouldTakeDamage(ply, attacker)
-	if attacker:GetClass() == "trigger_hurt" then
-		return true
+hook.Add("PlayerShouldTakeDamage", "PK_PlayerShouldTakeDamage", function(ply, attacker)
+	if ply:Team() == TEAM_UNASSIGNED then
+		return false
 	end
 
-	if ply:IsPlayer() and attacker:GetClass() != "prop_physics" then
-		return false
-	end
-	if ply:Team() == TEAM_UNASSIGNED then
-		return true
-	end
-	if GAMEMODE.TeamBased and ply:Team() == attacker.Owner:Team() and ply != attacker.Owner then
-		return false
+	if attacker:IsPlayer() then
+		if attacker:Team() == TEAM_UNASSIGNED then
+			return false
+		end
+
+		if GAMEMODE.TeamBased and attacker:Team() == ply:Team() then
+			return false
+		end
 	else
-		return true
+		if attacker:GetClass() == "trigger_hurt" then
+			return true
+		end
 	end
-	return true
-end
+end)
 
 function GM:EntityTakeDamage(target, dmg)
+	local inflictor = dmg:GetInflictor()
+
 	if not target:IsPlayer() then return end
-	dmg:ScaleDamage(9999999)
+	if inflictor == game.GetWorld() then return end // TODO: find closest prop if world damages
+
+	if IsValid(inflictor) and IsValid(inflictor.Owner) and inflictor.Owner:IsPlayer() then
+		dmg:SetAttacker(inflictor.Owner)
+	end
+
+	dmg:AddDamage(target:Health()+10000)
 end
 
+// disable flatline sound
 function GM:PlayerDeathSound()
-	// disables flatline sound
 	return true
 end
 
+// disable fall crunch and damage
 function GM:GetFallDamage()
-	// DISABLES FUCKING ANNOYING CRUNCH FALL SOUND OF HELL
 	return 0
 end
 
+// TODO: move to client
 function GetAlivePlayers()
 	local aliveplayers = {}
 	for k,v in pairs( player.GetAll() ) do
@@ -148,6 +137,7 @@ function GetAlivePlayers()
 	return aliveplayers or nil
 end
 
+// TODO: move to client
 function GetNextAlivePlayer( ply )
    local alive = GetAlivePlayers()
    
@@ -173,6 +163,7 @@ function GetNextAlivePlayer( ply )
    return choice
 end
 
+// TODO: move to client
 hook.Add("KeyPress", "speccontrols", function(ply, key)
 	if ply:GetObserverMode() != 0 then
 	  if key == IN_ATTACK then
